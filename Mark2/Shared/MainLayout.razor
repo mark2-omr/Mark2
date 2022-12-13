@@ -1,0 +1,19 @@
+﻿@inherits LayoutComponentBase
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<MudThemeProvider />
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudText Typo="Typo.h5" Class="mt-1">Mark2</MudText>
+        <MudSpacer />
+    </MudAppBar>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>

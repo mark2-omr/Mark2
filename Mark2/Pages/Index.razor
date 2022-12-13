@@ -1,0 +1,409 @@
+﻿@page "/"
+@page "/{surveyId?}"
+
+@using Microsoft.Extensions.Localization
+
+@inject IJSRuntime JSRuntime
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<Index> Loc
+
+<PageTitle>Mark2 - @Loc["MarkRecognition"]</PageTitle>
+
+<MudOverlay Visible="isLoadingRepository" DarkBackground="true" Absolute="true">
+    <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+</MudOverlay>
+
+<MudCard Style="margin-top: 2em;">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">
+                @if (survey.title != null)
+                {
+                    @survey.title
+                }
+                else if (isLoadingRepository)
+                {
+                        <MudSkeleton />
+                }
+                else if (surveyId == null)
+                {
+                    @Loc["MarkRecognition"]
+                }
+            </MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudGrid>
+            @if (surveyId != null)
+            {
+                    <MudItem xs="12">
+                        <MudSelect @bind-Value="@repositoryPayloadName" T="string" Variant="Variant.Outlined"
+                        AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var payload in survey.repositoryPayloads)
+                        {
+                                    <MudSelectItem T="string" Value=@payload.name />
+                        }
+                        </MudSelect>
+                    </MudItem>
+            }
+            else
+            {
+                    <MudItem xs="4">
+                        <InputFile id="layoutFileInput" OnChange="LoadLayoutFile" hidden accept=".xlsx" />
+                    @if (stopwatch.IsRunning)
+                    {
+                                <MudButton Variant="Variant.Filled" Size="Size.Large" Color="Color.Primary"
+                            StartIcon="@Icons.Custom.FileFormats.FileExcel" FullWidth="true" Disabled=true>
+                            @Loc["LoadLayout"]
+                                </MudButton>
+                    }
+                    else
+                    {
+                                <MudButton HtmlTag="label" Variant="Variant.Filled" Size="Size.Large"
+                            Color="Color.Primary" StartIcon="@Icons.Custom.FileFormats.FileExcel"
+                            FullWidth="true" for="layoutFileInput">
+                            @Loc["LoadLayout"]
+                                </MudButton>
+                    }
+                    </MudItem>
+                    <MudItem xs="8">
+                        <MudText>@layoutMessage</MudText>
+                    </MudItem>
+            }
+            <MudItem xs="4">
+                <InputFile id="imageFilesInput" OnChange="LoadImageFiles" hidden multiple accept=".png,.jpg,.jpeg,.bmp,.gif" />
+                @if (stopwatch.IsRunning)
+                {
+                        <MudButton Variant="Variant.Filled" Size="Size.Large" Color="Color.Primary"
+                        StartIcon="@Icons.Custom.FileFormats.FileImage" FullWidth="true" Disabled=true>
+                        @Loc["LoadImages"]
+                        </MudButton>
+                }
+                else
+                {
+                        <MudButton HtmlTag="label" Variant="Variant.Filled" Size="Size.Large" Color="Color.Primary"
+                        StartIcon="@Icons.Custom.FileFormats.FileImage" FullWidth="true"
+                        for="imageFilesInput">
+                        @Loc["LoadImages"]
+                        </MudButton>
+                }
+            </MudItem>
+            <MudItem xs="8">
+                <MudText>@imagesMessage</MudText>
+            </MudItem>
+            <MudItem xs="12">
+                <MudExpansionPanels>
+                    <MudExpansionPanel Text=@Loc["AdvancedSettings"]>
+                        <MudSlider @bind-Value="areaThreshold" Max=95 Min=5 Color="Color.Secondary">
+                            @Loc["AreaThreshold"]: @areaThreshold.ToString()
+                        </MudSlider>
+                        <MudSlider @bind-Value="colorThreshold" Max=95 Min=5 Color="Color.Tertiary">
+                            @Loc["ColorThreshold"]: @colorThreshold.ToString()
+                        </MudSlider>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+            </MudItem>
+        </MudGrid>
+    </MudCardContent>
+    <MudCardActions Class="d-flex align-center justify-center" Style="padding-bottom: 1em;">
+        @if (@hasImages && @hasLayout && !stopwatch.IsRunning)
+        {
+                <MudFab HtmlTag="label" Color="Color.Primary"
+                Icon="@Icons.Filled.PlayCircleFilled"
+                Label="@Loc["StartRecognition"]" OnClick=Start />
+        }
+        else
+        {
+                <MudFab HtmlTag="label" Color="Color.Default"
+                Icon="@Icons.Filled.PlayCircleFilled" Disabled=true
+                Label="@Loc["StartRecognition"]" />
+        }
+    </MudCardActions>
+</MudCard>
+
+@if (stopwatch.IsRunning || isCompleted)
+{
+        <MudCard Style="margin-top: 2em;">
+            <MudCardContent>
+                <MudProgressLinear Color="Color.Primary" Min=0 Max=@imageFiles.Count Value="@processed" />
+            </MudCardContent>
+            <MudCardActions Class="d-flex align-center justify-center" Style="padding-bottom: 1em;">
+            @if (stopwatch.IsRunning)
+            {
+                        <MudFab HtmlTag="label" Color="Color.Primary"
+                    Label="@progressMessage" Disabled=true />
+            }
+            else if (isCompleted)
+            {
+                        <MudFab HtmlTag="label" Color="Color.Primary"
+                    Icon="@Icons.Filled.Download"
+                    Label="@Loc["Download"]" OnClick=DownloadFile />
+            }
+            </MudCardActions>
+        </MudCard>
+}
+
+@if (isCompleted)
+{
+        <MudCard Style="margin: 2em 0; height: 1000;">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.body1">@survey.imageFiles[logIndex].Name</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                @if (isLoadingLogImage)
+                {
+                            <MudIconButton Icon="@Icons.Filled.Download" Color="Color.Default"
+                        Disabled=true />
+                }
+                else
+                {
+                            <MudIconButton Icon="@Icons.Filled.Download" Color="Color.Primary"
+                        OnClick=DownloadLogImage />
+                }
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="2" Class="d-flex align-center justify-center">
+                    @if (logIndex > 0 && !isLoadingLogImage)
+                    {
+                                <MudFab Icon="@Icons.Filled.ChevronLeft" Color="Color.Primary" OnClick=DecrementLogIndex />
+                    }
+                    else
+                    {
+                                <MudFab Icon="@Icons.Filled.ChevronLeft" Color="Color.Default" Disabled=true />
+                    }
+                    </MudItem>
+                    <MudItem xs="8" Class="d-flex align-center justify-center">
+                    @if (isLoadingLogImage)
+                    {
+                                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave"
+                            Width="80%" Height="auto" Style="aspect-ratio: 1 / 1.41421356;" />
+                    }
+                    else
+                    {
+                                <img src="data:image/png;base64,@survey.selectedLogImage" style="width: 80%;" />
+                    }
+                    </MudItem>
+                    <MudItem xs="2" Class="d-flex align-center justify-center">
+                    @if (logIndex < survey.imageFiles.Count - 1 && !isLoadingLogImage)
+                    {
+                                <MudFab Icon="@Icons.Filled.ChevronRight" Color="Color.Primary" OnClick=IncrementLogIndex />
+                    }
+                    else
+                    {
+                                <MudFab Icon="@Icons.Filled.ChevronRight" Color="Color.Default" Disabled=true />
+                    }
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+}
+<div>&nbsp;</div>
+
+@code
+{
+    [Parameter]
+    public string? surveyId { get; set; }
+
+    private string? repositoryPayloadName;
+    private bool isLoadingRepository = false;
+
+    private long maxFileSize = 1024 * 1024 * 10;
+    private int maxAllowedFiles = 10000;
+
+    private Survey survey = new();
+    private IList<IBrowserFile> imageFiles = new List<IBrowserFile>();
+    private int areaThreshold = 40;
+    private int colorThreshold = 10;
+    private bool hasImages = false;
+    private bool hasLayout = false;
+    private string imagesMessage = "";
+    private string layoutMessage = "";
+    private string progressMessage = "";
+    private bool isCompleted = false;
+    private int processed = 0;
+    private CancellationTokenSource cts = new();
+    private System.Diagnostics.Stopwatch stopwatch = new();
+
+    private int logIndex = 0;
+    private bool isLoadingLogImage = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (surveyId != null)
+        {
+            isLoadingRepository = true;
+            StateHasChanged();
+            await Task.Delay(1);
+
+            try
+            {
+                await survey.FetchRepository(surveyId);
+                repositoryPayloadName = survey.repositoryPayloads[0].name;
+                hasLayout = true;
+            }
+            catch (Exception)
+            {
+                surveyId = null;
+                Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+                Snackbar.Add(Loc["RepositoryLoadingError"], Severity.Error, (options) =>
+                {
+                    options.CloseAfterNavigation = false;
+                });
+            }
+            isLoadingRepository = false;
+        }
+    }
+
+    private void LoadImageFiles(InputFileChangeEventArgs e)
+    {
+        imageFiles = new List<IBrowserFile>();
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            try
+            {
+                imageFiles.Add(file);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        if (imageFiles.Count > 0)
+        {
+            hasImages = true;
+            imagesMessage = $"{imageFiles.Count} {Loc["LoadedImagesMessageSuffix"]}";
+        }
+        else
+        {
+            hasImages = false;
+            imagesMessage = "";
+        }
+    }
+
+    private async Task LoadLayoutFile(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            foreach (var file in e.GetMultipleFiles())
+            {
+                MemoryStream stream = new();
+                await file.OpenReadStream(maxFileSize).CopyToAsync(stream);
+                stream.Position = 0;
+
+                survey.SetupPositionsFromFile(stream);
+                hasLayout = true;
+            }
+            layoutMessage = Loc["LoadedLayoutMessage"];
+        }
+        catch (Exception ex)
+        {
+            hasLayout = false;
+            layoutMessage = ex.Message;
+        }
+    }
+
+    private async Task Start()
+    {
+        if (surveyId != null)
+        {
+            survey.SetupPositionsFromRepository(repositoryPayloadName);
+        }
+
+        processed = 0;
+        progressMessage = $"{processed} / {imageFiles.Count}";
+        survey.imageFiles = imageFiles.OrderBy(x => x.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
+        survey.areaThreshold = areaThreshold / 100.0;
+        survey.colorThreshold = colorThreshold / 100.0;
+        survey.answers = new();
+        isCompleted = false;
+        logIndex = 0;
+        stopwatch = new();
+        stopwatch.Start();
+        StateHasChanged();
+        await Task.Delay(1);
+
+        await Task.Run(async () =>
+        {
+            for (int i = 0; i < imageFiles.Count; i++)
+            {
+                if (i == 0)
+                {
+                    await survey.Recognize(i, JSRuntime, true);
+                }
+                else
+                {
+                    await survey.Recognize(i, JSRuntime);
+                }
+                processed++;
+                progressMessage = $"{processed} / {imageFiles.Count}";
+                StateHasChanged();
+                await Task.Delay(1);
+            };
+            isCompleted = true;
+        }, cts.Token);
+
+        stopwatch.Stop();
+        var elapsedTime = Convert.ToDouble(stopwatch.ElapsedMilliseconds) / 1000.0;
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomLeft;
+        Snackbar.Configuration.SnackbarVariant = Variant.Outlined;
+        Snackbar.Add($"{Loc["ElapsedTime"]}: {elapsedTime} {Loc["Seconds"]}", Severity.Info, (options) =>
+        {
+            options.CloseAfterNavigation = true;
+            options.Icon = Icons.Material.Outlined.TaskAlt;
+        });
+
+        // cts.Token.ThrowIfCancellationRequested();
+    }
+
+    private async Task DownloadFile()
+    {
+        var dateTime = DateTime.Now;
+        await JSRuntime.InvokeAsync<object>(
+            "FileSaveAs",
+            $"Mark2-Result-{dateTime.ToString("yyyyMMdd_HHmmss")}.xlsx",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            survey.ResultSpreadsheet()
+        );
+    }
+
+    private async Task DownloadLogImage()
+    {
+        await JSRuntime.InvokeAsync<object>(
+            "FileSaveAs",
+            $"Mark2-Log-{Path.GetFileNameWithoutExtension(imageFiles[logIndex].Name)}.png",
+            "image/png",
+            survey.selectedLogImage
+        );
+    }
+
+    private async Task IncrementLogIndex()
+    {
+        if (logIndex < survey.imageFiles.Count - 1)
+        {
+            logIndex++;
+            isLoadingLogImage = true;
+            await Task.Run(async () =>
+            {
+                await survey.Recognize(logIndex, JSRuntime, true);
+                isLoadingLogImage = false;
+            });
+        }
+    }
+
+    private async Task DecrementLogIndex()
+    {
+        if (logIndex > 0)
+        {
+            logIndex--;
+            isLoadingLogImage = true;
+            await Task.Run(async () =>
+            {
+                await survey.Recognize(logIndex, JSRuntime, true);
+                isLoadingLogImage = false;
+            });
+        }
+    }
+}
