@@ -1,53 +1,72 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Mark2</title>
     <base href="/" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+      rel="stylesheet"
+    />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
-    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
     <link href="manifest.json" rel="manifest" />
-    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-</head>
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png" />
+  </head>
 
-<body>
+  <body>
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
+      <svg class="loading-progress">
+        <circle r="40%" cx="50%" cy="50%" />
+        <circle r="40%" cx="50%" cy="50%" />
+      </svg>
+      <div class="loading-progress-text"></div>
     </div>
 
-    <div id="wasm-error" style="display: none; width: 100%; height: 100%; background-color: #f5f5f5; padding: 50px; text-align: center;">
-        <div id="wasm-error-message"></div>
+    <div
+      id="wasm-error"
+      style="
+        display: none;
+        width: 100%;
+        height: 100%;
+        background-color: #f5f5f5;
+        padding: 50px;
+        text-align: center;
+      "
+    >
+      <div id="wasm-error-message"></div>
     </div>
 
     <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
+      An unhandled error has occurred.
+      <a href="" class="reload">Reload</a>
+      <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
-    <script>navigator.serviceWorker.register('service-worker.js');</script>
+    <script>
+      navigator.serviceWorker.register("service-worker.js");
+    </script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="js/FileSaveAs.js"></script>
     <script src="js/ort/bundle.min.js"></script>
     <script>
-        if (typeof WebAssembly !== "object") {
-            if (navigator.language.startsWith("ja")) {
-                document.getElementById("wasm-error-message").innerHTML = "このブラウザーはWebAssemblyが有効になっていないため、Mark2を実行できません。";
-            } else {
-                document.getElementById("wasm-error-message").innerHTML = "This browser cannot run Mark2 because WebAssembly is not enabled.";
-            };
-            document.getElementById("app").style.display = "none";
-            document.getElementById("wasm-error").style.display = "block";
+      if (typeof WebAssembly !== "object") {
+        if (navigator.language.startsWith("ja")) {
+          document.getElementById("wasm-error-message").innerHTML =
+            "このブラウザーはWebAssemblyが有効になっていないため、Mark2を実行できません。";
+        } else {
+          document.getElementById("wasm-error-message").innerHTML =
+            "This browser cannot run Mark2 because WebAssembly is not enabled.";
         }
+        document.getElementById("app").style.display = "none";
+        document.getElementById("wasm-error").style.display = "block";
+      }
     </script>
-</body>
-
+  </body>
 </html>
