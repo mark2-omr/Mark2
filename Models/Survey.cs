@@ -37,7 +37,7 @@ public class Survey
     public async Task FetchRepository(string surveyId)
     {
         HttpClient client = new();
-        string url = "https://repository-jpr6ybciua-uc.a.run.app/?id=" + surveyId;
+        string url = "https://mark2-repository.defrag.works/api/" + surveyId;
         var repository = await client.GetFromJsonAsync<Repository>(url);
         if (repository != null)
         {
