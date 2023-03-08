@@ -109,13 +109,13 @@
         @if (@hasImages && @hasLayout && !stopwatch.IsRunning)
         {
                 <MudFab HtmlTag="label" Color="Color.Primary"
-                Icon="@Icons.Filled.PlayCircleFilled"
+                Icon="@Icons.Material.Filled.PlayCircleFilled"
                 Label="@Loc["StartRecognition"]" OnClick=Start />
         }
         else
         {
                 <MudFab HtmlTag="label" Color="Color.Default"
-                Icon="@Icons.Filled.PlayCircleFilled" Disabled=true
+                Icon="@Icons.Material.Filled.PlayCircleFilled" Disabled=true
                 Label="@Loc["StartRecognition"]" />
         }
     </MudCardActions>
@@ -136,7 +136,7 @@
             else if (isCompleted)
             {
                         <MudFab HtmlTag="label" Color="Color.Primary"
-                    Icon="@Icons.Filled.Download"
+                    Icon="@Icons.Material.Filled.Download"
                     Label="@Loc["Download"]" OnClick=DownloadFile />
             }
             </MudCardActions>
@@ -153,12 +153,12 @@
                 <CardHeaderActions>
                 @if (isLoadingLogImage)
                 {
-                            <MudIconButton Icon="@Icons.Filled.Download" Color="Color.Default"
+                            <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Default"
                         Disabled=true />
                 }
                 else
                 {
-                            <MudIconButton Icon="@Icons.Filled.Download" Color="Color.Primary"
+                            <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary"
                         OnClick=DownloadLogImage />
                 }
                 </CardHeaderActions>
@@ -168,11 +168,11 @@
                     <MudItem xs="2" Class="d-flex align-center justify-center">
                     @if (logIndex > 0 && !isLoadingLogImage)
                     {
-                                <MudFab Icon="@Icons.Filled.ChevronLeft" Color="Color.Primary" OnClick=DecrementLogIndex />
+                                <MudFab Icon="@Icons.Material.Filled.ChevronLeft" Color="Color.Primary" OnClick=DecrementLogIndex />
                     }
                     else
                     {
-                                <MudFab Icon="@Icons.Filled.ChevronLeft" Color="Color.Default" Disabled=true />
+                                <MudFab Icon="@Icons.Material.Filled.ChevronLeft" Color="Color.Default" Disabled=true />
                     }
                     </MudItem>
                     <MudItem xs="8" Class="d-flex align-center justify-center">
@@ -189,11 +189,11 @@
                     <MudItem xs="2" Class="d-flex align-center justify-center">
                     @if (logIndex < survey.imageFiles.Count - 1 && !isLoadingLogImage)
                     {
-                                <MudFab Icon="@Icons.Filled.ChevronRight" Color="Color.Primary" OnClick=IncrementLogIndex />
+                                <MudFab Icon="@Icons.Material.Filled.ChevronRight" Color="Color.Primary" OnClick=IncrementLogIndex />
                     }
                     else
                     {
-                                <MudFab Icon="@Icons.Filled.ChevronRight" Color="Color.Default" Disabled=true />
+                                <MudFab Icon="@Icons.Material.Filled.ChevronRight" Color="Color.Default" Disabled=true />
                     }
                     </MudItem>
                 </MudGrid>
