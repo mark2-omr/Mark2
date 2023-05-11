@@ -9,12 +9,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <RunAOTCompilation>true</RunAOTCompilation>
+    <RunAOTCompilation>True</RunAOTCompilation>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <WasmEnableSIMD>true</WasmEnableSIMD>
-    <RunAOTCompilation>true</RunAOTCompilation>
+    <WasmEnableSIMD>True</WasmEnableSIMD>
+    <RunAOTCompilation>True</RunAOTCompilation>
   </PropertyGroup>
 
   <ItemGroup>
