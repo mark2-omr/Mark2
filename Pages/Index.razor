@@ -1,5 +1,4 @@
 ﻿@page "/"
-@page "/{surveyId?}"
 
 @using Microsoft.Extensions.Localization
 
@@ -212,6 +211,7 @@
 @code
 {
     [Parameter]
+    [SupplyParameterFromQuery(Name = "r")]
     public string? surveyId { get; set; }
 
     private string? repositoryPayloadName;
