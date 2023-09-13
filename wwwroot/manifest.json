@@ -1,6 +1,6 @@
 {
-  "name": "Mark2",
-  "short_name": "Mark2",
+  "name": "Mark2 Desktop",
+  "short_name": "Mark2 Desktop",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
