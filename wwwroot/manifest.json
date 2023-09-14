@@ -1,7 +1,9 @@
 {
   "name": "Mark2 Desktop",
   "short_name": "Mark2 Desktop",
+  "description": "Mark2 is an application for mark recognition.",
   "start_url": "./",
+  "display_override": [],
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#03173d",
@@ -10,12 +12,23 @@
     {
       "src": "icon-512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
     },
     {
       "src": "icon-192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-1.png",
+      "sizes": "1024x768",
+      "type": "image/png"
+    }
+  ],
+  "orientation": "any",
+  "edge_side_panel": {}
 }
