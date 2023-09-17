@@ -8,6 +8,13 @@
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#03173d",
+  "shortcuts": [
+    {
+      "name": "Mark2 Desktop",
+      "url": "/",
+      "description": "Mark2 is an application for mark recognition."
+    }
+  ],
   "prefer_related_applications": false,
   "icons": [
     {
