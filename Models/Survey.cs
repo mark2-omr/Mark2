@@ -42,11 +42,11 @@ public class Survey
         if (repository != null)
         {
             this.title = repository.name;
-            this.repositoryPayloads = repository.payloads;
+            this.repositoryPayloads = repository.payloads!;
         }
     }
 
-    public void SetupPositionsFromRepository(string repositoryPayloadName)
+    public void SetupPositionsFromRepository(string? repositoryPayloadName)
     {
         foreach (var payload in this.repositoryPayloads)
         {

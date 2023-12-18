@@ -22,7 +22,7 @@
                 }
                 else if (isLoadingRepository)
                 {
-                        <MudSkeleton />
+                    <MudSkeleton />
                 }
                 else if (surveyId == null)
                 {
@@ -37,7 +37,7 @@
             {
                 <MudItem xs="12">
                     <MudSelect @bind-Value="@repositoryPayloadName" T="string" Variant="Variant.Outlined"
-                    AnchorOrigin="Origin.BottomCenter">
+                        AnchorOrigin="Origin.BottomCenter">
                         @foreach (var payload in survey.repositoryPayloads)
                         {
                             <MudSelectItem T="string" Value=@payload.name />
@@ -51,17 +51,15 @@
                     <InputFile id="layoutFileInput" OnChange="LoadLayoutFile" hidden accept=".xlsx" />
                     @if (stopwatch.IsRunning)
                     {
-                        <MudButton Variant="Variant.Filled" Size="Size.Large"
-                            Color="Color.Primary"
+                        <MudButton Variant="Variant.Filled" Size="Size.Large" Color="Color.Primary"
                             StartIcon="@Icons.Custom.FileFormats.FileExcel" FullWidth="true" Disabled=true>
                             @Loc["LoadLayout"]
                         </MudButton>
                     }
                     else
                     {
-                        <MudButton HtmlTag="label" Variant="Variant.Filled" Size="Size.Large"
-                            Color="Color.Primary" StartIcon="@Icons.Custom.FileFormats.FileExcel"
-                            FullWidth="true" for="layoutFileInput">
+                        <MudButton HtmlTag="label" Variant="Variant.Filled" Size="Size.Large" Color="Color.Primary"
+                            StartIcon="@Icons.Custom.FileFormats.FileExcel" FullWidth="true" for="layoutFileInput">
                             @Loc["LoadLayout"]
                         </MudButton>
                     }
@@ -71,7 +69,8 @@
                 </MudItem>
             }
             <MudItem xs="4">
-                <InputFile id="imageFilesInput" OnChange="LoadImageFiles" hidden multiple accept=".png,.jpg,.jpeg,.bmp,.gif" />
+                <InputFile id="imageFilesInput" OnChange="LoadImageFiles" hidden multiple
+                    accept=".png,.jpg,.jpeg,.bmp,.gif" />
                 @if (stopwatch.IsRunning)
                 {
                     <MudButton Variant="Variant.Filled" Size="Size.Large" Color="Color.Primary"
@@ -81,10 +80,8 @@
                 }
                 else
                 {
-                    <MudButton HtmlTag="label" Variant="Variant.Filled" Size="Size.Large"
-                        Color="Color.Primary"
-                        StartIcon="@Icons.Custom.FileFormats.FileImage" FullWidth="true"
-                        for="imageFilesInput">
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Size="Size.Large" Color="Color.Primary"
+                        StartIcon="@Icons.Custom.FileFormats.FileImage" FullWidth="true" for="imageFilesInput">
                         @Loc["LoadImages"]
                     </MudButton>
                 }
@@ -109,14 +106,12 @@
     <MudCardActions Class="d-flex align-center justify-center" Style="padding-bottom: 1em;">
         @if (@hasImages && @hasLayout && !stopwatch.IsRunning)
         {
-            <MudFab HtmlTag="label" Color="Color.Primary"
-                StartIcon="@Icons.Material.Filled.PlayCircleFilled"
+            <MudFab HtmlTag="label" Color="Color.Primary" StartIcon="@Icons.Material.Filled.PlayCircleFilled"
                 Label="@Loc["StartRecognition"]" OnClick=Start />
         }
         else
         {
-            <MudFab HtmlTag="label" Color="Color.Default"
-                StartIcon="@Icons.Material.Filled.PlayCircleFilled" Disabled=true
+            <MudFab HtmlTag="label" Color="Color.Default" StartIcon="@Icons.Material.Filled.PlayCircleFilled" Disabled=true
                 Label="@Loc["StartRecognition"]" />
         }
     </MudCardActions>
@@ -124,87 +119,80 @@
 
 @if (stopwatch.IsRunning || isCompleted)
 {
-        <MudCard Style="margin-top: 2em;">
-            <MudCardContent>
-                <MudProgressLinear Color="Color.Primary" Min=0 Max=@imageFiles.Count Value="@processed" />
-            </MudCardContent>
-            <MudCardActions Class="d-flex align-center justify-center" Style="padding-bottom: 1em;">
-            @if (stopwatch.IsRunning)
+    <MudCard Style="margin-top: 2em;">
+    <MudCardContent>
+        <MudProgressLinear Color="Color.Primary" Min=0 Max=@imageFiles.Count Value="@processed" />
+    </MudCardContent>
+    <MudCardActions Class="d-flex align-center justify-center" Style="padding-bottom: 1em;">
+        @if (stopwatch.IsRunning)
             {
-                <MudFab HtmlTag="label" Color="Color.Primary"
-                    Label="@progressMessage" Disabled=true />
+                <MudFab HtmlTag="label" Color="Color.Primary" Label="@progressMessage" Disabled=true />
             }
             else if (isCompleted)
             {
-                <MudFab HtmlTag="label" Color="Color.Primary"
-                    StartIcon="@Icons.Material.Filled.Download"
+                <MudFab HtmlTag="label" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Download"
                     Label="@Loc["Download"]" OnClick=DownloadFile />
             }
-            </MudCardActions>
-        </MudCard>
+        </MudCardActions>
+    </MudCard>
 }
 
 @if (isCompleted)
 {
-        <MudCard Style="margin: 2em 0; height: 1000;">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.body1">@survey.imageFiles[logIndex].Name</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                @if (isLoadingLogImage)
+    <MudCard Style="margin: 2em 0; height: 1000;">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.body1">@survey.imageFiles[logIndex].Name</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            @if (isLoadingLogImage)
                 {
-                    <MudIconButton Icon="@Icons.Material.Filled.Download"
-                        Color="Color.Default" Disabled=true />
+                    <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Default" Disabled=true />
                 }
                 else
                 {
-                    <MudIconButton Icon="@Icons.Material.Filled.Download"
-                        Color="Color.Primary" OnClick=DownloadLogImage />
+                    <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" OnClick=DownloadLogImage />
                 }
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudGrid>
-                    <MudItem xs="2" Class="d-flex align-center justify-center">
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudGrid>
+                <MudItem xs="2" Class="d-flex align-center justify-center">
                     @if (logIndex > 0 && !isLoadingLogImage)
                     {
-                        <MudFab StartIcon="@Icons.Material.Filled.ChevronLeft"
-                            Color="Color.Primary" OnClick=DecrementLogIndex />
+                        <MudFab StartIcon="@Icons.Material.Filled.ChevronLeft" Color="Color.Primary"
+                            OnClick=DecrementLogIndex />
                     }
                     else
                     {
-                            <MudFab StartIcon="@Icons.Material.Filled.ChevronLeft"
-                                Color="Color.Default" Disabled=true />
+                        <MudFab StartIcon="@Icons.Material.Filled.ChevronLeft" Color="Color.Default" Disabled=true />
                     }
-                    </MudItem>
-                    <MudItem xs="8" Class="d-flex align-center justify-center">
+                </MudItem>
+                <MudItem xs="8" Class="d-flex align-center justify-center">
                     @if (isLoadingLogImage)
                     {
-                        <MudSkeleton SkeletonType="SkeletonType.Rectangle"
-                            Animation="Animation.Wave"
-                            Width="80%" Height="auto" Style="aspect-ratio: 1 / 1.41421356;" />
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Width="80%" Height="auto"
+                            Style="aspect-ratio: 1 / 1.41421356;" />
                     }
                     else
                     {
                         <img src="data:image/png;base64,@survey.selectedLogImage" style="width: 80%;" />
                     }
-                    </MudItem>
-                    <MudItem xs="2" Class="d-flex align-center justify-center">
+                </MudItem>
+                <MudItem xs="2" Class="d-flex align-center justify-center">
                     @if (logIndex < survey.imageFiles.Count - 1 && !isLoadingLogImage)
                     {
-                        <MudFab StartIcon="@Icons.Material.Filled.ChevronRight"
-                            Color="Color.Primary" OnClick=IncrementLogIndex />
+                        <MudFab StartIcon="@Icons.Material.Filled.ChevronRight" Color="Color.Primary"
+                            OnClick=IncrementLogIndex />
                     }
                     else
                     {
-                        <MudFab StartIcon="@Icons.Material.Filled.ChevronRight"
-                            Color="Color.Default" Disabled=true />
+                        <MudFab StartIcon="@Icons.Material.Filled.ChevronRight" Color="Color.Default" Disabled=true />
                     }
-                    </MudItem>
-                </MudGrid>
-            </MudCardContent>
-        </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
 }
 <div>&nbsp;</div>
 
@@ -369,20 +357,20 @@
     {
         var dateTime = DateTime.Now;
         await JSRuntime.InvokeAsync<object>(
-            "FileSaveAs",
-            $"Mark2-Result-{dateTime.ToString("yyyyMMdd_HHmmss")}.xlsx",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            survey.ResultSpreadsheet()
+        "FileSaveAs",
+        $"Mark2-Result-{dateTime.ToString("yyyyMMdd_HHmmss")}.xlsx",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        survey.ResultSpreadsheet()
         );
     }
 
     private async Task DownloadLogImage()
     {
         await JSRuntime.InvokeAsync<object>(
-            "FileSaveAs",
-            $"Mark2-Log-{Path.GetFileNameWithoutExtension(imageFiles[logIndex].Name)}.png",
-            "image/png",
-            survey.selectedLogImage
+        "FileSaveAs",
+        $"Mark2-Log-{Path.GetFileNameWithoutExtension(imageFiles[logIndex].Name)}.png",
+        "image/png",
+        survey.selectedLogImage
         );
     }
 
