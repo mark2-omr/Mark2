@@ -35,7 +35,7 @@ jobs:
       - name: Publish
         run: dotnet publish Mark2.csproj -p:GHPages=true -p:GHPagesBase=/ -c:Release -o:publish
       - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: "publish/wwwroot"
       - name: Deploy to GitHub Pages
