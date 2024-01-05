@@ -16,9 +16,9 @@
     <MudCardHeader>
         <CardHeaderContent>
             <MudText Typo="Typo.h6">
-                @if (survey.title != null)
+                @if (survey.Title != null)
                 {
-                    @survey.title
+                    @survey.Title
                 }
                 else if (isLoadingRepository)
                 {
@@ -38,9 +38,9 @@
                 <MudItem xs="12">
                     <MudSelect @bind-Value="@repositoryPayloadName" T="string" Variant="Variant.Outlined"
                         AnchorOrigin="Origin.BottomCenter">
-                        @foreach (var payload in survey.repositoryPayloads)
+                        @foreach (var payload in survey.RepositoryPayloads)
                         {
-                            <MudSelectItem T="string" Value=@payload.name />
+                            <MudSelectItem T="string" Value=@payload.Name />
                         }
                     </MudSelect>
                 </MudItem>
@@ -142,7 +142,7 @@
     <MudCard Style="margin: 2em 0; height: 1000;">
     <MudCardHeader>
         <CardHeaderContent>
-            <MudText Typo="Typo.body1">@survey.imageFiles[logIndex].Name</MudText>
+            <MudText Typo="Typo.body1">@survey.ImageFiles[logIndex].Name</MudText>
         </CardHeaderContent>
         <CardHeaderActions>
             @if (isLoadingLogImage)
@@ -176,11 +176,11 @@
                     }
                     else
                     {
-                        <img src="data:image/png;base64,@survey.selectedLogImage" style="width: 80%;" />
+                        <img src="data:image/png;base64,@survey.SelectedLogImage" style="width: 80%;" />
                     }
                 </MudItem>
                 <MudItem xs="2" Class="d-flex align-center justify-center">
-                    @if (logIndex < survey.imageFiles.Count - 1 && !isLoadingLogImage)
+                    @if (logIndex < survey.ImageFiles.Count - 1 && !isLoadingLogImage)
                     {
                         <MudFab StartIcon="@Icons.Material.Filled.ChevronRight" Color="Color.Primary"
                             OnClick=IncrementLogIndex />
@@ -236,7 +236,7 @@
             try
             {
                 await survey.FetchRepository(surveyId);
-                repositoryPayloadName = survey.repositoryPayloads[0].name;
+                repositoryPayloadName = survey.RepositoryPayloads[0].Name;
                 hasLayout = true;
             }
             catch (Exception)
@@ -309,10 +309,10 @@
 
         processed = 0;
         progressMessage = $"{processed} / {imageFiles.Count}";
-        survey.imageFiles = imageFiles.OrderBy(x => x.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
-        survey.areaThreshold = areaThreshold / 100.0;
-        survey.colorThreshold = colorThreshold / 100.0;
-        survey.answers = new();
+        survey.ImageFiles = imageFiles.OrderBy(x => x.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
+        survey.AreaThreshold = areaThreshold / 100.0;
+        survey.ColorThreshold = colorThreshold / 100.0;
+        survey.Answers = new();
         isCompleted = false;
         logIndex = 0;
         stopwatch = new();
@@ -370,13 +370,13 @@
         "FileSaveAs",
         $"Mark2-Log-{Path.GetFileNameWithoutExtension(imageFiles[logIndex].Name)}.png",
         "image/png",
-        survey.selectedLogImage
+        survey.SelectedLogImage
         );
     }
 
     private async Task IncrementLogIndex()
     {
-        if (logIndex < survey.imageFiles.Count - 1)
+        if (logIndex < survey.ImageFiles.Count - 1)
         {
             logIndex++;
             isLoadingLogImage = true;

@@ -2,6 +2,6 @@
 
 public class Repository
 {
-    public string? name { get; set; }
-    public List<RepositoryPayload>? payloads { get; set; }
+    public string? Name { get; set; }
+    public List<RepositoryPayload>? Payloads { get; set; }
 }

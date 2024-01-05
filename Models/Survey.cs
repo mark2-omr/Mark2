@@ -15,23 +15,23 @@ using System.Threading.Tasks;
 
 public class Survey
 {
-    public string? title;
-    public List<RepositoryPayload> repositoryPayloads = new();
+    public string? Title;
+    public List<RepositoryPayload> RepositoryPayloads = new();
 
-    public IList<IBrowserFile> imageFiles;
-    public double areaThreshold;
-    public double colorThreshold;
-    public List<Page> pages;
+    public IList<IBrowserFile> ImageFiles;
+    public double AreaThreshold;
+    public double ColorThreshold;
+    public List<Page> Pages;
 
-    public Dictionary<string, List<List<int>>> answers;
-    public string selectedLogImage;
+    public Dictionary<string, List<List<int>>> Answers;
+    public string SelectedLogImage;
 
     public Survey()
     {
-        imageFiles = new List<IBrowserFile>();
-        pages = new();
-        answers = new();
-        selectedLogImage = string.Empty;
+        ImageFiles = new List<IBrowserFile>();
+        Pages = new();
+        Answers = new();
+        SelectedLogImage = string.Empty;
     }
 
     public async Task FetchRepository(string surveyId)
@@ -42,19 +42,19 @@ public class Survey
         var repository = await client.GetFromJsonAsync<Repository>(url);
         if (repository != null)
         {
-            this.title = repository.name;
-            this.repositoryPayloads = repository.payloads!;
+            this.Title = repository.Name;
+            this.RepositoryPayloads = repository.Payloads!;
         }
     }
 
     public void SetupPositionsFromRepository(string? repositoryPayloadName)
     {
-        foreach (var payload in this.repositoryPayloads)
+        foreach (var payload in this.RepositoryPayloads)
         {
-            if (payload.name == repositoryPayloadName && payload.values != null)
+            if (payload.Name == repositoryPayloadName && payload.Values != null)
             {
-                pages = new();
-                var row = payload.values[0];
+                Pages = new();
+                var row = payload.Values[0];
 
                 List<int> vs = new();
                 for (int i = 1; i <= row.Count / 4; i++)
@@ -68,18 +68,18 @@ public class Survey
                     }
                 }
 
-                for (int i = 3; i < payload.values.Count; i++)
+                for (int i = 3; i < payload.Values.Count; i++)
                 {
-                    row = payload.values[i];
+                    row = payload.Values[i];
                     int pageNumber = row[2].GetInt32();
-                    while (pages.Count() < pageNumber)
+                    while (Pages.Count() < pageNumber)
                     {
-                        pages.Add(new Page());
+                        Pages.Add(new Page());
                     }
 
                     Question question = new();
-                    question.text = row[1].ToString();
-                    question.type = row[3].GetInt32();
+                    question.Text = row[1].ToString();
+                    question.Type = row[3].GetInt32();
 
                     for (int j = 1; j <= row.Count / 4; j++)
                     {
@@ -89,15 +89,15 @@ public class Survey
                                 row[j * 4 + 1].GetInt32(),
                                 row[j * 4 + 2].GetInt32(),
                                 row[j * 4 + 3].GetInt32());
-                            area.v = vs[j - 1];
+                            area.V = vs[j - 1];
 
-                            question.areas.Add(area);
+                            question.Areas.Add(area);
                         }
                         catch (Exception)
                         {
                         }
                     }
-                    pages[pageNumber - 1].questions.Add(question);
+                    Pages[pageNumber - 1].Questions.Add(question);
                 }
             }
         }
@@ -105,7 +105,7 @@ public class Survey
 
     public void SetupPositionsFromFile(MemoryStream ms)
     {
-        pages = new();
+        Pages = new();
         var workbook = new XSSFWorkbook(ms);
         var sheet = workbook.GetSheetAt(0);
         var row = sheet.GetRow(0);
@@ -131,14 +131,14 @@ public class Survey
             {
                 row = sheet.GetRow(i);
                 pageNumber = Convert.ToInt32(row.GetCell(2).NumericCellValue);
-                while (pages.Count() < pageNumber)
+                while (Pages.Count() < pageNumber)
                 {
-                    pages.Add(new Page());
+                    Pages.Add(new Page());
                 }
 
                 question = new();
-                question.text = row.GetCell(1).ToString();
-                question.type = Convert.ToInt32(row.GetCell(3).NumericCellValue);
+                question.Text = row.GetCell(1).ToString();
+                question.Type = Convert.ToInt32(row.GetCell(3).NumericCellValue);
             }
             catch (Exception)
             {
@@ -153,30 +153,30 @@ public class Survey
                         Convert.ToInt32(row.GetCell(j * 4 + 1).NumericCellValue),
                         Convert.ToInt32(row.GetCell(j * 4 + 2).NumericCellValue),
                         Convert.ToInt32(row.GetCell(j * 4 + 3).NumericCellValue));
-                    area.v = vs[j - 1];
+                    area.V = vs[j - 1];
 
-                    question.areas.Add(area);
+                    question.Areas.Add(area);
                 }
                 catch (Exception)
                 {
                 }
             }
-            pages[pageNumber - 1].questions.Add(question);
+            Pages[pageNumber - 1].Questions.Add(question);
         }
     }
 
     public async Task Recognize(int index, IJSRuntime js, bool updateLogImage = false)
     {
         MemoryStream stream = new();
-        await imageFiles[index].OpenReadStream(1024 * 1024 * 24).CopyToAsync(stream);
+        await ImageFiles[index].OpenReadStream(1024 * 1024 * 24).CopyToAsync(stream);
         var image = Image.Load<Rgba32>(stream.ToArray());
-        Item item = new(index, pages[index % pages.Count()], colorThreshold, areaThreshold,
-                        imageFiles[index].Name, image, js);
+        Item item = new(index, Pages[index % Pages.Count()], ColorThreshold, AreaThreshold,
+                        ImageFiles[index].Name, image, js);
         await item.Recognize();
-        answers[item.name] = item.answers;
+        Answers[item.Name] = item.Answers;
         if (updateLogImage)
         {
-            selectedLogImage = item.LogImageBase64();
+            SelectedLogImage = item.LogImageBase64();
         }
     }
 
@@ -192,9 +192,9 @@ public class Survey
         cell = row.CreateCell(1);
         cell.SetCellValue("File");
         int questionIndex = 0;
-        foreach (var page in pages)
+        foreach (var page in Pages)
         {
-            foreach (var question in page.questions)
+            foreach (var question in page.Questions)
             {
                 cell = row.CreateCell(questionIndex + 2);
                 cell.SetCellValue(questionIndex + 1);
@@ -205,12 +205,12 @@ public class Survey
         // second header
         row = sheet.CreateRow(1);
         questionIndex = 0;
-        foreach (var page in pages)
+        foreach (var page in Pages)
         {
-            foreach (var question in page.questions)
+            foreach (var question in page.Questions)
             {
                 cell = row.CreateCell(questionIndex + 2);
-                cell.SetCellValue(question.text);
+                cell.SetCellValue(question.Text);
                 questionIndex++;
             }
         }
@@ -218,10 +218,10 @@ public class Survey
         int rowIndex = 1;
         int itemIndex = 0;
         List<string> names = new();
-        foreach (var _answers in answers.OrderBy(d => d.Key, StringComparison.OrdinalIgnoreCase.WithNaturalSort()))
+        foreach (var _answers in Answers.OrderBy(d => d.Key, StringComparison.OrdinalIgnoreCase.WithNaturalSort()))
         {
             // first page
-            if (itemIndex % pages.Count == 0)
+            if (itemIndex % Pages.Count == 0)
             {
                 rowIndex++;
                 row = sheet.CreateRow(rowIndex);
@@ -259,7 +259,7 @@ public class Survey
             }
 
             // last page
-            if ((itemIndex + 1) % pages.Count == 0 || itemIndex + 1 == answers.Count)
+            if ((itemIndex + 1) % Pages.Count == 0 || itemIndex + 1 == Answers.Count)
             {
                 cell = row.CreateCell(1);
                 cell.SetCellValue(string.Join(";", names));

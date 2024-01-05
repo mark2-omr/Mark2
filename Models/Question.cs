@@ -3,12 +3,12 @@
 using System.Collections.Generic;
 public class Question
 {
-    public string? text;
-    public int type;
-    public List<Area> areas;
+    public string? Text;
+    public int Type;
+    public List<Area> Areas;
 
     public Question()
     {
-        areas = new List<Area>();
+        Areas = new List<Area>();
     }
 }
