@@ -2,20 +2,20 @@
 
 public class Square
 {
-    public int x;
-    public int y;
-    public int w;
-    public int h;
-    public int cx;
-    public int cy;
+    public int X;
+    public int Y;
+    public int W;
+    public int H;
+    public int Cx;
+    public int Cy;
 
     public Square(int x, int y, int w, int h, int cx, int cy)
     {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-        this.cx = cx;
-        this.cy = cy;
+        this.X = x;
+        this.Y = y;
+        this.W = w;
+        this.H = h;
+        this.Cx = cx;
+        this.Cy = cy;
     }
 }

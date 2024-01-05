@@ -7,44 +7,44 @@ using SixLabors.ImageSharp.Processing;
 
 public class Item
 {
-    public int pid;
-    public string name;
-    public Image<Rgba32> image;
-    public Image<Rgba32> logImage;
-    public List<Square> squares;
-    public Page page;
-    public double colorThreshold;
-    public double areaThreshold;
-    public List<List<int>> answers;
+    public int Pid;
+    public string Name;
+    public Image<Rgba32> Image;
+    public Image<Rgba32> LogImage;
+    public List<Square> Squares;
+    public Page Page;
+    public double ColorThreshold;
+    public double AreaThreshold;
+    public List<List<int>> Answers;
     private readonly IJSRuntime js;
 
     public Item(int pid, Page page, double colorThreshold, double areaThreshold, string name,
                 Image<Rgba32> image, IJSRuntime js)
     {
-        this.pid = pid;
-        this.page = page;
-        this.colorThreshold = colorThreshold;
-        this.areaThreshold = areaThreshold;
-        this.name = name;
-        this.image = image;
+        this.Pid = pid;
+        this.Page = page;
+        this.ColorThreshold = colorThreshold;
+        this.AreaThreshold = areaThreshold;
+        this.Name = name;
+        this.Image = image;
         this.js = js;
 
-        this.logImage = image.Clone();
-        this.squares = DetectSquares();
-        this.answers = new();
+        this.LogImage = image.Clone();
+        this.Squares = DetectSquares();
+        this.Answers = new();
     }
 
     public List<Square> DetectSquares()
     {
         var squares = new List<Square>();
-        var margin = new int[] { (int)(image.Width * 0.01), (int)(image.Height * 0.01) };
-        var size = new int[] { (int)(image.Width * 0.3), (int)(image.Height * 0.08) };
+        var margin = new int[] { (int)(Image.Width * 0.01), (int)(Image.Height * 0.01) };
+        var size = new int[] { (int)(Image.Width * 0.3), (int)(Image.Height * 0.08) };
 
         squares.Add(DetectSquare(margin, size));
-        squares.Add(DetectSquare(new int[] { image.Width - margin[0] - size[0], margin[1] }, size));
-        squares.Add(DetectSquare(new int[] { image.Width - margin[0] - size[0],
-                image.Height - margin[1] - size[1] }, size));
-        squares.Add(DetectSquare(new int[] { margin[0], image.Height - margin[1] - size[1] }, size));
+        squares.Add(DetectSquare(new int[] { Image.Width - margin[0] - size[0], margin[1] }, size));
+        squares.Add(DetectSquare(new int[] { Image.Width - margin[0] - size[0],
+                Image.Height - margin[1] - size[1] }, size));
+        squares.Add(DetectSquare(new int[] { margin[0], Image.Height - margin[1] - size[1] }, size));
         return squares;
     }
 
@@ -57,7 +57,7 @@ public class Item
         {
             for (var j = 0; j < size[1]; j++)
             {
-                if (image[i + topLeft[0], j + topLeft[1]].R < 128)
+                if (Image[i + topLeft[0], j + topLeft[1]].R < 128)
                 {
                     pixels[i, j] = index;
                     index++;
@@ -147,7 +147,7 @@ public class Item
             xs.Max() - xs.Min(), ys.Max() - ys.Min(),
             topLeft[0] + (int)xs.Average(), topLeft[1] + (int)ys.Average());
 
-        FillRect(square.x, square.y, square.w, square.h, Rgba32.ParseHex("#FF0000FF"), 0.8f);
+        FillRect(square.X, square.Y, square.W, square.H, Rgba32.ParseHex("#FF0000FF"), 0.8f);
 
         return square;
     }
@@ -208,11 +208,11 @@ public class Item
             }
         }
 
-        var xq = squares[0].cx + (squares[1].cx - squares[0].cx) * u + (squares[3].cx - squares[0].cx) * v
-            + (squares[0].cx - squares[1].cx + squares[2].cx - squares[3].cx) * u * v;
+        var xq = Squares[0].Cx + (Squares[1].Cx - Squares[0].Cx) * u + (Squares[3].Cx - Squares[0].Cx) * v
+            + (Squares[0].Cx - Squares[1].Cx + Squares[2].Cx - Squares[3].Cx) * u * v;
 
-        var yq = squares[0].cy + (squares[1].cy - squares[0].cy) * u + (squares[3].cy - squares[0].cy) * v
-            + (squares[0].cy - squares[1].cy + squares[2].cy - squares[3].cy) * u * v;
+        var yq = Squares[0].Cy + (Squares[1].Cy - Squares[0].Cy) * u + (Squares[3].Cy - Squares[0].Cy) * v
+            + (Squares[0].Cy - Squares[1].Cy + Squares[2].Cy - Squares[3].Cy) * u * v;
 
         return new int[] { (int)xq, (int)yq };
     }
@@ -223,42 +223,42 @@ public class Item
         {
             for (int j = y; j < h + y; j++)
             {
-                logImage[i, j] = new Rgba32(
-                    ((float)logImage[i, j].R * (1.0f - a) + (float)c.R * a) / 255.0f,
-                    ((float)logImage[i, j].G * (1.0f - a) + (float)c.G * a) / 255.0f,
-                    ((float)logImage[i, j].B * (1.0f - a) + (float)c.B * a) / 255.0f);
+                LogImage[i, j] = new Rgba32(
+                    ((float)LogImage[i, j].R * (1.0f - a) + (float)c.R * a) / 255.0f,
+                    ((float)LogImage[i, j].G * (1.0f - a) + (float)c.G * a) / 255.0f,
+                    ((float)LogImage[i, j].B * (1.0f - a) + (float)c.B * a) / 255.0f);
             }
         }
     }
 
     public async Task Recognize()
     {
-        answers = new();
+        Answers = new();
 
-        foreach (var (question, qid) in page.questions.Select((question, qid) => (question, qid)))
+        foreach (var (question, qid) in Page.Questions.Select((question, qid) => (question, qid)))
         {
             List<int> _answers = new();
-            if (question.type == 1)
+            if (question.Type == 1)
             {
-                foreach (var area in question.areas)
+                foreach (var area in question.Areas)
                 {
-                    var topLeft = BiLenearInterpoltation(area.x, area.y);
-                    var bottomRight = BiLenearInterpoltation(area.x + area.w, area.y + area.h);
+                    var topLeft = BiLenearInterpoltation(area.X, area.Y);
+                    var bottomRight = BiLenearInterpoltation(area.X + area.W, area.Y + area.H);
 
                     int count = 0;
                     for (int i = topLeft[0]; i < bottomRight[0]; i++)
                     {
                         for (int j = topLeft[1]; j < bottomRight[1]; j++)
                         {
-                            if (image[i, j].R < (int)((1 - colorThreshold) * 255))
+                            if (Image[i, j].R < (int)((1 - ColorThreshold) * 255))
                             {
                                 count++;
                             }
                         }
                     }
-                    if ((double)count / ((bottomRight[0] - topLeft[0]) * (bottomRight[1] - topLeft[1])) > areaThreshold)
+                    if ((double)count / ((bottomRight[0] - topLeft[0]) * (bottomRight[1] - topLeft[1])) > AreaThreshold)
                     {
-                        _answers.Add(area.v);
+                        _answers.Add(area.V);
                         FillRect(topLeft[0], topLeft[1], bottomRight[0] - topLeft[0], bottomRight[1] - topLeft[1],
                             Rgba32.ParseHex("#00FF00FF"), 0.4f);
                     }
@@ -269,13 +269,13 @@ public class Item
                     }
                 }
             }
-            else if (question.type == 2)
+            else if (question.Type == 2)
             {
-                var area = question.areas[0];
-                var topLeft = BiLenearInterpoltation(area.x, area.y);
-                var bottomRight = BiLenearInterpoltation(area.x + area.w, area.y + area.h);
+                var area = question.Areas[0];
+                var topLeft = BiLenearInterpoltation(area.X, area.Y);
+                var bottomRight = BiLenearInterpoltation(area.X + area.W, area.Y + area.H);
 
-                var cloneImage = image.Clone(img => img
+                var cloneImage = Image.Clone(img => img
                             .Crop(new Rectangle(topLeft[0], topLeft[1],
                                 bottomRight[0] - topLeft[0], bottomRight[1] - topLeft[1]))
                             .Resize(28, 28));
@@ -297,7 +297,7 @@ public class Item
                 {
                     for (int x = 2; x < 26; x++)
                     {
-                        if (cloneImage[x, y].R < (int)((1 - colorThreshold) * 255))
+                        if (cloneImage[x, y].R < (int)((1 - ColorThreshold) * 255))
                         {
                             average_x += (float)x;
                             average_y += (float)y;
@@ -353,18 +353,18 @@ public class Item
                 FillRect(topLeft[0], topLeft[1], bottomRight[0] - topLeft[0], bottomRight[1] - topLeft[1],
                     Rgba32.ParseHex("#0000FFFF"), 0.4f);
             }
-            else if (question.type == 3)
+            else if (question.Type == 3)
             {
             }
 
-            answers.Add(_answers);
+            Answers.Add(_answers);
         }
     }
 
     public string LogImageBase64()
     {
         MemoryStream stream = new();
-        logImage.SaveAsPng(stream);
+        LogImage.SaveAsPng(stream);
         return Convert.ToBase64String(stream.ToArray());
     }
 }

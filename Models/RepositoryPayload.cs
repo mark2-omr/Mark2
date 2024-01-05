@@ -2,6 +2,6 @@
 
 public class RepositoryPayload
 {
-    public string? name { get; set; }
-    public List<List<dynamic>>? values { get; set; }
+    public string? Name { get; set; }
+    public List<List<dynamic>>? Values { get; set; }
 }

@@ -4,10 +4,10 @@ using System.Collections.Generic;
 
 public class Page
 {
-    public List<Question> questions;
+    public List<Question> Questions;
 
     public Page()
     {
-        questions = new List<Question>();
+        Questions = new List<Question>();
     }
 }
