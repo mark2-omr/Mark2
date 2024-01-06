@@ -24,7 +24,7 @@
                 {
                     <MudSkeleton />
                 }
-                else if (surveyId == null)
+                else if (SurveyId == null)
                 {
                     @Loc["MarkRecognition"]
                 }
@@ -33,7 +33,7 @@
     </MudCardHeader>
     <MudCardContent>
         <MudGrid>
-            @if (surveyId != null)
+            @if (SurveyId != null)
             {
                 <MudItem xs="12">
                     <MudSelect @bind-Value="@repositoryPayloadName" T="string" Variant="Variant.Outlined"
@@ -200,7 +200,7 @@
 {
     [Parameter]
     [SupplyParameterFromQuery(Name = "r")]
-    public string? surveyId { get; set; }
+    public string? SurveyId { get; set; }
 
     private string? repositoryPayloadName;
     private bool isLoadingRepository = false;
@@ -227,7 +227,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (surveyId != null)
+        if (SurveyId != null)
         {
             isLoadingRepository = true;
             StateHasChanged();
@@ -235,13 +235,13 @@
 
             try
             {
-                await survey.FetchRepository(surveyId);
+                await survey.FetchRepository(SurveyId);
                 repositoryPayloadName = survey.RepositoryPayloads[0].Name;
                 hasLayout = true;
             }
             catch (Exception)
             {
-                surveyId = null;
+                SurveyId = null;
                 Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
                 Snackbar.Add(Loc["RepositoryLoadingError"], Severity.Error, (options) =>
                 {
@@ -302,7 +302,7 @@
 
     private async Task Start()
     {
-        if (surveyId != null)
+        if (SurveyId != null)
         {
             survey.SetupPositionsFromRepository(repositoryPayloadName);
         }
