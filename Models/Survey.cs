@@ -72,7 +72,7 @@ public class Survey
                 {
                     row = payload.Values[i];
                     int pageNumber = row[2].GetInt32();
-                    while (Pages.Count() < pageNumber)
+                    while (Pages.Count < pageNumber)
                     {
                         Pages.Add(new Page());
                     }
@@ -131,7 +131,7 @@ public class Survey
             {
                 row = sheet.GetRow(i);
                 pageNumber = Convert.ToInt32(row.GetCell(2).NumericCellValue);
-                while (Pages.Count() < pageNumber)
+                while (Pages.Count < pageNumber)
                 {
                     Pages.Add(new Page());
                 }
@@ -170,7 +170,7 @@ public class Survey
         MemoryStream stream = new();
         await ImageFiles[index].OpenReadStream(1024 * 1024 * 24).CopyToAsync(stream);
         var image = Image.Load<Rgba32>(stream.ToArray());
-        Item item = new(index, Pages[index % Pages.Count()], ColorThreshold, AreaThreshold,
+        Item item = new(index, Pages[index % Pages.Count], ColorThreshold, AreaThreshold,
                         ImageFiles[index].Name, image, js);
         await item.Recognize();
         Answers[item.Name] = item.Answers;
