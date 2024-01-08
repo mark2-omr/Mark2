@@ -10,9 +10,9 @@ public class Area
 
     public Area(int x, int y, int w, int h)
     {
-        this.X = x;
-        this.Y = y;
-        this.W = w;
-        this.H = h;
+        X = x;
+        Y = y;
+        W = w;
+        H = h;
     }
 }

@@ -11,11 +11,11 @@ public class Square
 
     public Square(int x, int y, int w, int h, int cx, int cy)
     {
-        this.X = x;
-        this.Y = y;
-        this.W = w;
-        this.H = h;
-        this.Cx = cx;
-        this.Cy = cy;
+        X = x;
+        Y = y;
+        W = w;
+        H = h;
+        Cx = cx;
+        Cy = cy;
     }
 }
