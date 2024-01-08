@@ -16,22 +16,22 @@ public class Item
     public double ColorThreshold;
     public double AreaThreshold;
     public List<List<int>> Answers;
-    private readonly IJSRuntime js;
+    private readonly IJSRuntime _js;
 
     public Item(int pid, Page page, double colorThreshold, double areaThreshold, string name,
                 Image<Rgba32> image, IJSRuntime js)
     {
-        this.Pid = pid;
-        this.Page = page;
-        this.ColorThreshold = colorThreshold;
-        this.AreaThreshold = areaThreshold;
-        this.Name = name;
-        this.Image = image;
-        this.js = js;
+        Pid = pid;
+        Page = page;
+        ColorThreshold = colorThreshold;
+        AreaThreshold = areaThreshold;
+        Name = name;
+        Image = image;
+        _js = js;
 
-        this.LogImage = image.Clone();
-        this.Squares = DetectSquares();
-        this.Answers = new();
+        LogImage = image.Clone();
+        Squares = DetectSquares();
+        Answers = new();
     }
 
     public List<Square> DetectSquares()
@@ -342,7 +342,7 @@ public class Item
 
                 try
                 {
-                    var ans = await js.InvokeAsync<int>("runOnnxRuntime", data);
+                    var ans = await _js.InvokeAsync<int>("runOnnxRuntime", data);
                     _answers.Add(ans);
                 }
                 catch (Exception ex)

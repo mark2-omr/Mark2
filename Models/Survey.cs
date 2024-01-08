@@ -42,14 +42,14 @@ public class Survey
         var repository = await client.GetFromJsonAsync<Repository>(url);
         if (repository != null)
         {
-            this.Title = repository.Name;
-            this.RepositoryPayloads = repository.Payloads!;
+            Title = repository.Name;
+            RepositoryPayloads = repository.Payloads!;
         }
     }
 
     public void SetupPositionsFromRepository(string? repositoryPayloadName)
     {
-        foreach (var payload in this.RepositoryPayloads)
+        foreach (var payload in RepositoryPayloads)
         {
             if (payload.Name == repositoryPayloadName && payload.Values != null)
             {
