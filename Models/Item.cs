@@ -306,8 +306,8 @@ public class Item
                     }
                 }
 
-                average_x = average_x / average_count;
-                average_y = average_y / average_count;
+                average_x /= average_count;
+                average_y /= average_count;
 
                 int dx = 14 - (int)average_x;
                 int dy = 14 - (int)average_y;
