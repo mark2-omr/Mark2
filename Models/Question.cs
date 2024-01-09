@@ -1,6 +1,7 @@
 ﻿namespace Mark2;
 
 using System.Collections.Generic;
+
 public class Question
 {
     public string? Text;
