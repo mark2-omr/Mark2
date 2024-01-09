@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 public class Survey
 {
     public string? Title;
-    public List<RepositoryPayload> RepositoryPayloads = new();
+    public List<RepositoryPayload> RepositoryPayloads = [];
 
     public IList<IBrowserFile> ImageFiles;
     public double AreaThreshold;
@@ -29,8 +29,8 @@ public class Survey
     public Survey()
     {
         ImageFiles = new List<IBrowserFile>();
-        Pages = new();
-        Answers = new();
+        Pages = [];
+        Answers = [];
         SelectedLogImage = string.Empty;
     }
 
@@ -53,10 +53,10 @@ public class Survey
         {
             if (payload.Name == repositoryPayloadName && payload.Values != null)
             {
-                Pages = new();
+                Pages = [];
                 var row = payload.Values[0];
 
-                List<int> vs = new();
+                List<int> vs = [];
                 for (int i = 1; i <= row.Count / 4; i++)
                 {
                     try
@@ -72,14 +72,16 @@ public class Survey
                 {
                     row = payload.Values[i];
                     int pageNumber = row[2].GetInt32();
-                    while (Pages.Count() < pageNumber)
+                    while (Pages.Count < pageNumber)
                     {
                         Pages.Add(new Page());
                     }
 
-                    Question question = new();
-                    question.Text = row[1].ToString();
-                    question.Type = row[3].GetInt32();
+                    Question question = new()
+                    {
+                        Text = row[1].ToString(),
+                        Type = row[3].GetInt32()
+                    };
 
                     for (int j = 1; j <= row.Count / 4; j++)
                     {
@@ -105,12 +107,12 @@ public class Survey
 
     public void SetupPositionsFromFile(MemoryStream ms)
     {
-        Pages = new();
+        Pages = [];
         var workbook = new XSSFWorkbook(ms);
         var sheet = workbook.GetSheetAt(0);
         var row = sheet.GetRow(0);
 
-        List<int> vs = new();
+        List<int> vs = [];
         for (int i = 1; i <= row.LastCellNum / 4; i++)
         {
             try
@@ -131,14 +133,16 @@ public class Survey
             {
                 row = sheet.GetRow(i);
                 pageNumber = Convert.ToInt32(row.GetCell(2).NumericCellValue);
-                while (Pages.Count() < pageNumber)
+                while (Pages.Count < pageNumber)
                 {
                     Pages.Add(new Page());
                 }
 
-                question = new();
-                question.Text = row.GetCell(1).ToString();
-                question.Type = Convert.ToInt32(row.GetCell(3).NumericCellValue);
+                question = new()
+                {
+                    Text = row.GetCell(1).ToString(),
+                    Type = Convert.ToInt32(row.GetCell(3).NumericCellValue)
+                };
             }
             catch (Exception)
             {
@@ -170,7 +174,7 @@ public class Survey
         MemoryStream stream = new();
         await ImageFiles[index].OpenReadStream(1024 * 1024 * 24).CopyToAsync(stream);
         var image = Image.Load<Rgba32>(stream.ToArray());
-        Item item = new(index, Pages[index % Pages.Count()], ColorThreshold, AreaThreshold,
+        Item item = new(index, Pages[index % Pages.Count], ColorThreshold, AreaThreshold,
                         ImageFiles[index].Name, image, js);
         await item.Recognize();
         Answers[item.Name] = item.Answers;
@@ -217,7 +221,7 @@ public class Survey
 
         int rowIndex = 1;
         int itemIndex = 0;
-        List<string> names = new();
+        List<string> names = [];
         foreach (var _answers in Answers.OrderBy(d => d.Key, StringComparison.OrdinalIgnoreCase.WithNaturalSort()))
         {
             // first page
@@ -228,7 +232,7 @@ public class Survey
                 cell = row.CreateCell(0);
                 cell.SetCellValue(rowIndex - 1);
                 questionIndex = 2;
-                names = new();
+                names = [];
             }
 
             names.Add(_answers.Key);

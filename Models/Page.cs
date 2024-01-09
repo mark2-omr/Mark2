@@ -8,6 +8,6 @@ public class Page
 
     public Page()
     {
-        Questions = new List<Question>();
+        Questions = [];
     }
 }
