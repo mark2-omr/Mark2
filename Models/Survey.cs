@@ -77,9 +77,11 @@ public class Survey
                         Pages.Add(new Page());
                     }
 
-                    Question question = new();
-                    question.Text = row[1].ToString();
-                    question.Type = row[3].GetInt32();
+                    Question question = new()
+                    {
+                        Text = row[1].ToString(),
+                        Type = row[3].GetInt32()
+                    };
 
                     for (int j = 1; j <= row.Count / 4; j++)
                     {
@@ -136,9 +138,11 @@ public class Survey
                     Pages.Add(new Page());
                 }
 
-                question = new();
-                question.Text = row.GetCell(1).ToString();
-                question.Type = Convert.ToInt32(row.GetCell(3).NumericCellValue);
+                question = new()
+                {
+                    Text = row.GetCell(1).ToString(),
+                    Type = Convert.ToInt32(row.GetCell(3).NumericCellValue)
+                };
             }
             catch (Exception)
             {
