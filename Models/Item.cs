@@ -41,10 +41,10 @@ public class Item
         var size = new int[] { (int)(Image.Width * 0.3), (int)(Image.Height * 0.08) };
 
         squares.Add(DetectSquare(margin, size));
-        squares.Add(DetectSquare(new int[] { Image.Width - margin[0] - size[0], margin[1] }, size));
-        squares.Add(DetectSquare(new int[] { Image.Width - margin[0] - size[0],
-                Image.Height - margin[1] - size[1] }, size));
-        squares.Add(DetectSquare(new int[] { margin[0], Image.Height - margin[1] - size[1] }, size));
+        squares.Add(DetectSquare([Image.Width - margin[0] - size[0], margin[1]], size));
+        squares.Add(DetectSquare([Image.Width - margin[0] - size[0],
+            Image.Height - margin[1] - size[1]], size));
+        squares.Add(DetectSquare([margin[0], Image.Height - margin[1] - size[1]], size));
         return squares;
     }
 
@@ -214,7 +214,7 @@ public class Item
         var yq = Squares[0].Cy + (Squares[1].Cy - Squares[0].Cy) * u + (Squares[3].Cy - Squares[0].Cy) * v
             + (Squares[0].Cy - Squares[1].Cy + Squares[2].Cy - Squares[3].Cy) * u * v;
 
-        return new int[] { (int)xq, (int)yq };
+        return [(int)xq, (int)yq];
     }
 
     public void FillRect(int x, int y, int w, int h, Rgba32 c, float a)
