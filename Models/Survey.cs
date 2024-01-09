@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 public class Survey
 {
     public string? Title;
-    public List<RepositoryPayload> RepositoryPayloads = new();
+    public List<RepositoryPayload> RepositoryPayloads = [];
 
     public IList<IBrowserFile> ImageFiles;
     public double AreaThreshold;
@@ -29,8 +29,8 @@ public class Survey
     public Survey()
     {
         ImageFiles = new List<IBrowserFile>();
-        Pages = new();
-        Answers = new();
+        Pages = [];
+        Answers = [];
         SelectedLogImage = string.Empty;
     }
 
@@ -53,10 +53,10 @@ public class Survey
         {
             if (payload.Name == repositoryPayloadName && payload.Values != null)
             {
-                Pages = new();
+                Pages = [];
                 var row = payload.Values[0];
 
-                List<int> vs = new();
+                List<int> vs = [];
                 for (int i = 1; i <= row.Count / 4; i++)
                 {
                     try
@@ -105,12 +105,12 @@ public class Survey
 
     public void SetupPositionsFromFile(MemoryStream ms)
     {
-        Pages = new();
+        Pages = [];
         var workbook = new XSSFWorkbook(ms);
         var sheet = workbook.GetSheetAt(0);
         var row = sheet.GetRow(0);
 
-        List<int> vs = new();
+        List<int> vs = [];
         for (int i = 1; i <= row.LastCellNum / 4; i++)
         {
             try
@@ -217,7 +217,7 @@ public class Survey
 
         int rowIndex = 1;
         int itemIndex = 0;
-        List<string> names = new();
+        List<string> names = [];
         foreach (var _answers in Answers.OrderBy(d => d.Key, StringComparison.OrdinalIgnoreCase.WithNaturalSort()))
         {
             // first page
@@ -228,7 +228,7 @@ public class Survey
                 cell = row.CreateCell(0);
                 cell.SetCellValue(rowIndex - 1);
                 questionIndex = 2;
-                names = new();
+                names = [];
             }
 
             names.Add(_answers.Key);

@@ -31,7 +31,7 @@ public class Item
 
         LogImage = image.Clone();
         Squares = DetectSquares();
-        Answers = new();
+        Answers = [];
     }
 
     public List<Square> DetectSquares()
@@ -111,7 +111,7 @@ public class Item
             }
         }
 
-        Dictionary<int, int> frequency = new();
+        Dictionary<int, int> frequency = [];
         for (var i = 0; i < size[0]; i++)
         {
             for (var j = 0; j < size[1]; j++)
@@ -129,8 +129,8 @@ public class Item
         }
         var mostFrequent = frequency.OrderByDescending(v => v.Value).First().Key;
 
-        List<int> xs = new();
-        List<int> ys = new();
+        List<int> xs = [];
+        List<int> ys = [];
         for (var i = 0; i < size[0]; i++)
         {
             for (var j = 0; j < size[1]; j++)
@@ -233,11 +233,11 @@ public class Item
 
     public async Task Recognize()
     {
-        Answers = new();
+        Answers = [];
 
         foreach (var (question, qid) in Page.Questions.Select((question, qid) => (question, qid)))
         {
-            List<int> _answers = new();
+            List<int> _answers = [];
             if (question.Type == 1)
             {
                 foreach (var area in question.Areas)

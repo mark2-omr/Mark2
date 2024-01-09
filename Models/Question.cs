@@ -9,6 +9,6 @@ public class Question
 
     public Question()
     {
-        Areas = new List<Area>();
+        Areas = [];
     }
 }
