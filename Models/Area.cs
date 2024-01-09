@@ -7,12 +7,4 @@ public class Area
     public int W;
     public int H;
     public int V;
-
-    public Area(int x, int y, int w, int h)
-    {
-        X = x;
-        Y = y;
-        W = w;
-        H = h;
-    }
 }

@@ -143,9 +143,15 @@ public class Item
             }
         }
 
-        var square = new Square(topLeft[0] + xs.Min(), topLeft[1] + ys.Min(),
-            xs.Max() - xs.Min(), ys.Max() - ys.Min(),
-            topLeft[0] + (int)xs.Average(), topLeft[1] + (int)ys.Average());
+        var square = new Square()
+        {
+            X = topLeft[0] + xs.Min(),
+            Y = topLeft[1] + ys.Min(),
+            W = xs.Max() - xs.Min(),
+            H = ys.Max() - ys.Min(),
+            Cx = topLeft[0] + (int)xs.Average(),
+            Cy = topLeft[1] + (int)ys.Average()
+        };
 
         FillRect(square.X, square.Y, square.W, square.H, Rgba32.ParseHex("#FF0000FF"), 0.8f);
 
