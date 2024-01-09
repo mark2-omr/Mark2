@@ -15,16 +15,16 @@ using System.Threading.Tasks;
 
 public class Survey
 {
-    public string? Title;
-    public List<RepositoryPayload> RepositoryPayloads = [];
+    public string? Title { get; set; }
+    public List<RepositoryPayload> RepositoryPayloads { get; set; } = [];
 
-    public IList<IBrowserFile> ImageFiles;
-    public double AreaThreshold;
-    public double ColorThreshold;
-    public List<Page> Pages;
+    public IList<IBrowserFile> ImageFiles { get; set; }
+    public double AreaThreshold { get; set; }
+    public double ColorThreshold { get; set; }
+    public List<Page> Pages { get; set; }
 
-    public Dictionary<string, List<List<int>>> Answers;
-    public string SelectedLogImage;
+    public Dictionary<string, List<List<int>>> Answers { get; set; }
+    public string SelectedLogImage { get; set; }
 
     public Survey()
     {

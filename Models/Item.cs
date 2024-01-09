@@ -7,15 +7,15 @@ using SixLabors.ImageSharp.Processing;
 
 public class Item
 {
-    public int Pid;
-    public string Name;
-    public Image<Rgba32> Image;
-    public Image<Rgba32> LogImage;
-    public List<Square> Squares;
-    public Page Page;
-    public double ColorThreshold;
-    public double AreaThreshold;
-    public List<List<int>> Answers;
+    public int Pid { get; set; }
+    public string Name { get; set; }
+    public Image<Rgba32> Image { get; set; }
+    public Image<Rgba32> LogImage { get; set; }
+    public List<Square> Squares { get; set; }
+    public Page Page { get; set; }
+    public double ColorThreshold { get; set; }
+    public double AreaThreshold { get; set; }
+    public List<List<int>> Answers { get; set; }
     private readonly IJSRuntime _js;
 
     public Item(int pid, Page page, double colorThreshold, double areaThreshold, string name,
