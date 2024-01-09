@@ -7,15 +7,15 @@ using SixLabors.ImageSharp.Processing;
 
 public class Item
 {
-    public int Pid;
-    public string Name;
-    public Image<Rgba32> Image;
-    public Image<Rgba32> LogImage;
-    public List<Square> Squares;
-    public Page Page;
-    public double ColorThreshold;
-    public double AreaThreshold;
-    public List<List<int>> Answers;
+    public int Pid { get; set; }
+    public string Name { get; set; }
+    public Image<Rgba32> Image { get; set; }
+    public Image<Rgba32> LogImage { get; set; }
+    public List<Square> Squares { get; set; }
+    public Page Page { get; set; }
+    public double ColorThreshold { get; set; }
+    public double AreaThreshold { get; set; }
+    public List<List<int>> Answers { get; set; }
     private readonly IJSRuntime _js;
 
     public Item(int pid, Page page, double colorThreshold, double areaThreshold, string name,
@@ -143,9 +143,15 @@ public class Item
             }
         }
 
-        var square = new Square(topLeft[0] + xs.Min(), topLeft[1] + ys.Min(),
-            xs.Max() - xs.Min(), ys.Max() - ys.Min(),
-            topLeft[0] + (int)xs.Average(), topLeft[1] + (int)ys.Average());
+        var square = new Square()
+        {
+            X = topLeft[0] + xs.Min(),
+            Y = topLeft[1] + ys.Min(),
+            W = xs.Max() - xs.Min(),
+            H = ys.Max() - ys.Min(),
+            Cx = topLeft[0] + (int)xs.Average(),
+            Cy = topLeft[1] + (int)ys.Average()
+        };
 
         FillRect(square.X, square.Y, square.W, square.H, Rgba32.ParseHex("#FF0000FF"), 0.8f);
 

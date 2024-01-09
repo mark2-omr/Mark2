@@ -15,16 +15,16 @@ using System.Threading.Tasks;
 
 public class Survey
 {
-    public string? Title;
-    public List<RepositoryPayload> RepositoryPayloads = [];
+    public string? Title { get; set; }
+    public List<RepositoryPayload> RepositoryPayloads { get; set; } = [];
 
-    public IList<IBrowserFile> ImageFiles;
-    public double AreaThreshold;
-    public double ColorThreshold;
-    public List<Page> Pages;
+    public IList<IBrowserFile> ImageFiles { get; set; }
+    public double AreaThreshold { get; set; }
+    public double ColorThreshold { get; set; }
+    public List<Page> Pages { get; set; }
 
-    public Dictionary<string, List<List<int>>> Answers;
-    public string SelectedLogImage;
+    public Dictionary<string, List<List<int>>> Answers { get; set; }
+    public string SelectedLogImage { get; set; }
 
     public Survey()
     {
@@ -87,11 +87,14 @@ public class Survey
                     {
                         try
                         {
-                            Area area = new(row[j * 4].GetInt32(),
-                                row[j * 4 + 1].GetInt32(),
-                                row[j * 4 + 2].GetInt32(),
-                                row[j * 4 + 3].GetInt32());
-                            area.V = vs[j - 1];
+                            Area area = new()
+                            {
+                                X = row[j * 4].GetInt32(),
+                                Y = row[j * 4 + 1].GetInt32(),
+                                W = row[j * 4 + 2].GetInt32(),
+                                H = row[j * 4 + 3].GetInt32(),
+                                V = vs[j - 1]
+                            };
 
                             question.Areas.Add(area);
                         }
@@ -153,11 +156,14 @@ public class Survey
             {
                 try
                 {
-                    Area area = new(Convert.ToInt32(row.GetCell(j * 4).NumericCellValue),
-                        Convert.ToInt32(row.GetCell(j * 4 + 1).NumericCellValue),
-                        Convert.ToInt32(row.GetCell(j * 4 + 2).NumericCellValue),
-                        Convert.ToInt32(row.GetCell(j * 4 + 3).NumericCellValue));
-                    area.V = vs[j - 1];
+                    Area area = new()
+                    {
+                        X = Convert.ToInt32(row.GetCell(j * 4).NumericCellValue),
+                        Y = Convert.ToInt32(row.GetCell(j * 4 + 1).NumericCellValue),
+                        W = Convert.ToInt32(row.GetCell(j * 4 + 2).NumericCellValue),
+                        H = Convert.ToInt32(row.GetCell(j * 4 + 3).NumericCellValue),
+                        V = vs[j - 1]
+                    };
 
                     question.Areas.Add(area);
                 }
