@@ -2,9 +2,9 @@
 
 public class Area
 {
-    public int X;
-    public int Y;
-    public int W;
-    public int H;
-    public int V;
+    public int X { get; set; }
+    public int Y { get; set; }
+    public int W { get; set; }
+    public int H { get; set; }
+    public int V { get; set; }
 }
