@@ -91,9 +91,9 @@ public class Survey
                             {
                                 X = row[j * 4].GetInt32(),
                                 Y = row[j * 4 + 1].GetInt32(),
-                                W = row[j * 4 + 2].GetInt32(),
-                                H = row[j * 4 + 3].GetInt32(),
-                                V = vs[j - 1]
+                                Width = row[j * 4 + 2].GetInt32(),
+                                Height = row[j * 4 + 3].GetInt32(),
+                                Value = vs[j - 1]
                             };
 
                             question.Areas.Add(area);
@@ -160,9 +160,9 @@ public class Survey
                     {
                         X = Convert.ToInt32(row.GetCell(j * 4).NumericCellValue),
                         Y = Convert.ToInt32(row.GetCell(j * 4 + 1).NumericCellValue),
-                        W = Convert.ToInt32(row.GetCell(j * 4 + 2).NumericCellValue),
-                        H = Convert.ToInt32(row.GetCell(j * 4 + 3).NumericCellValue),
-                        V = vs[j - 1]
+                        Width = Convert.ToInt32(row.GetCell(j * 4 + 2).NumericCellValue),
+                        Height = Convert.ToInt32(row.GetCell(j * 4 + 3).NumericCellValue),
+                        Value = vs[j - 1]
                     };
 
                     question.Areas.Add(area);

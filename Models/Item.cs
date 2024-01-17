@@ -147,13 +147,13 @@ public class Item
         {
             X = topLeft[0] + xs.Min(),
             Y = topLeft[1] + ys.Min(),
-            W = xs.Max() - xs.Min(),
-            H = ys.Max() - ys.Min(),
-            Cx = topLeft[0] + (int)xs.Average(),
-            Cy = topLeft[1] + (int)ys.Average()
+            Width = xs.Max() - xs.Min(),
+            Height = ys.Max() - ys.Min(),
+            CenterX = topLeft[0] + (int)xs.Average(),
+            CenterY = topLeft[1] + (int)ys.Average()
         };
 
-        FillRect(square.X, square.Y, square.W, square.H, Rgba32.ParseHex("#FF0000FF"), 0.8f);
+        FillRect(square.X, square.Y, square.Width, square.Height, Rgba32.ParseHex("#FF0000FF"), 0.8f);
 
         return square;
     }
@@ -214,11 +214,11 @@ public class Item
             }
         }
 
-        var xq = Squares[0].Cx + (Squares[1].Cx - Squares[0].Cx) * u + (Squares[3].Cx - Squares[0].Cx) * v
-            + (Squares[0].Cx - Squares[1].Cx + Squares[2].Cx - Squares[3].Cx) * u * v;
+        var xq = Squares[0].CenterX + (Squares[1].CenterX - Squares[0].CenterX) * u + (Squares[3].CenterX - Squares[0].CenterX) * v
+            + (Squares[0].CenterX - Squares[1].CenterX + Squares[2].CenterX - Squares[3].CenterX) * u * v;
 
-        var yq = Squares[0].Cy + (Squares[1].Cy - Squares[0].Cy) * u + (Squares[3].Cy - Squares[0].Cy) * v
-            + (Squares[0].Cy - Squares[1].Cy + Squares[2].Cy - Squares[3].Cy) * u * v;
+        var yq = Squares[0].CenterY + (Squares[1].CenterY - Squares[0].CenterY) * u + (Squares[3].CenterY - Squares[0].CenterY) * v
+            + (Squares[0].CenterY - Squares[1].CenterY + Squares[2].CenterY - Squares[3].CenterY) * u * v;
 
         return [(int)xq, (int)yq];
     }
@@ -249,7 +249,7 @@ public class Item
                 foreach (var area in question.Areas)
                 {
                     var topLeft = BiLenearInterpoltation(area.X, area.Y);
-                    var bottomRight = BiLenearInterpoltation(area.X + area.W, area.Y + area.H);
+                    var bottomRight = BiLenearInterpoltation(area.X + area.Width, area.Y + area.Height);
 
                     int count = 0;
                     for (int i = topLeft[0]; i < bottomRight[0]; i++)
@@ -264,7 +264,7 @@ public class Item
                     }
                     if ((double)count / ((bottomRight[0] - topLeft[0]) * (bottomRight[1] - topLeft[1])) > AreaThreshold)
                     {
-                        _answers.Add(area.V);
+                        _answers.Add(area.Value);
                         FillRect(topLeft[0], topLeft[1], bottomRight[0] - topLeft[0], bottomRight[1] - topLeft[1],
                             Rgba32.ParseHex("#00FF00FF"), 0.4f);
                     }
@@ -279,7 +279,7 @@ public class Item
             {
                 var area = question.Areas[0];
                 var topLeft = BiLenearInterpoltation(area.X, area.Y);
-                var bottomRight = BiLenearInterpoltation(area.X + area.W, area.Y + area.H);
+                var bottomRight = BiLenearInterpoltation(area.X + area.Width, area.Y + area.Height);
 
                 var cloneImage = Image.Clone(img => img
                             .Crop(new Rectangle(topLeft[0], topLeft[1],
