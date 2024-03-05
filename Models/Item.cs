@@ -30,7 +30,7 @@ public class Item
         _js = js;
 
         LogImage = image.Clone();
-        Squares = DetectSquares();
+        Squares = [];
         Answers = [];
     }
 
@@ -239,6 +239,7 @@ public class Item
 
     public async Task Recognize()
     {
+        Squares = DetectSquares();
         Answers = [];
 
         foreach (var (question, qid) in Page.Questions.Select((question, qid) => (question, qid)))
@@ -365,6 +366,27 @@ public class Item
 
             Answers.Add(_answers);
         }
+    }
+
+    public List<List<int>> ErrorAnswers()
+    {
+        var Answers = new List<List<int>>();
+        foreach (var (question, qid) in Page.Questions.Select((question, qid) => (question, qid)))
+        {
+            Answers.Add([-999, -999]);
+        }
+        return Answers;
+    }
+
+    public string ErrorImageBase64()
+    {
+        LogImage = Image.Clone();
+        FillRect(0, 0, LogImage.Width, LogImage.Height,
+            Rgba32.ParseHex("#FF0000FF"), 0.4f);
+
+        MemoryStream stream = new();
+        LogImage.SaveAsPng(stream);
+        return Convert.ToBase64String(stream.ToArray());
     }
 
     public string LogImageBase64()
