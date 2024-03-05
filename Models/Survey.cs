@@ -182,11 +182,22 @@ public class Survey
         var image = Image.Load<Rgba32>(stream.ToArray());
         Item item = new(index, Pages[index % Pages.Count], ColorThreshold, AreaThreshold,
                         ImageFiles[index].Name, image, js);
-        await item.Recognize();
-        Answers[item.Name] = item.Answers;
-        if (updateLogImage)
+        try
         {
-            SelectedLogImage = item.LogImageBase64();
+            await item.Recognize();
+            Answers[item.Name] = item.Answers;
+            if (updateLogImage)
+            {
+                SelectedLogImage = item.LogImageBase64();
+            }
+        }
+        catch
+        {
+            Answers[item.Name] = item.ErrorAnswers();
+            if (updateLogImage)
+            {
+                SelectedLogImage = item.ErrorImageBase64();
+            }
         }
     }
 
@@ -262,7 +273,12 @@ public class Survey
                     cellStyle.FillPattern = FillPattern.SolidForeground;
                     cellStyle.FillForegroundColor = IndexedColors.Coral.Index;
                     cell.CellStyle = cellStyle;
-                    cell.SetCellValue(string.Join(";", answer));
+
+                    var cellValue = string.Join(";", answer);
+                    if (cellValue != "-999;-999")
+                    {
+                        cell.SetCellValue(cellValue);
+                    }
                 }
 
                 questionIndex++;
