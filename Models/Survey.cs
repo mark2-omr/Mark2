@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using NaturalSort.Extension;
+using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using SixLabors.ImageSharp;
@@ -177,21 +178,42 @@ public class Survey
 
     public async Task Recognize(int index, IJSRuntime js, bool updateLogImage = false)
     {
+        bool imageLoaded = true;
         MemoryStream stream = new();
         await ImageFiles[index].OpenReadStream(1024 * 1024 * 24).CopyToAsync(stream);
-        var image = Image.Load<Rgba32>(stream.ToArray());
-        Item item = new(index, Pages[index % Pages.Count], ColorThreshold, AreaThreshold,
-                        ImageFiles[index].Name, image, js);
+        var image = new Image<Rgba32>(595, 842);
         try
         {
-            await item.Recognize();
-            Answers[item.Name] = item.Answers;
-            if (updateLogImage)
-            {
-                SelectedLogImage = item.LogImageBase64();
-            }
+            image = Image.Load<Rgba32>(stream.ToArray());
         }
         catch
+        {
+            imageLoaded = false;
+        }
+
+        Item item = new(index, Pages[index % Pages.Count], ColorThreshold, AreaThreshold,
+                        ImageFiles[index].Name, image, js);
+        if (imageLoaded)
+        {
+            try
+            {
+                await item.Recognize();
+                Answers[item.Name] = item.Answers;
+                if (updateLogImage)
+                {
+                    SelectedLogImage = item.LogImageBase64();
+                }
+            }
+            catch
+            {
+                Answers[item.Name] = item.ErrorAnswers();
+                if (updateLogImage)
+                {
+                    SelectedLogImage = item.ErrorImageBase64();
+                }
+            }
+        }
+        else
         {
             Answers[item.Name] = item.ErrorAnswers();
             if (updateLogImage)
