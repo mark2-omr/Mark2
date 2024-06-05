@@ -16,7 +16,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.6" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.6" />
-    <PackageReference Include="MudBlazor" Version="6.19.1" />
+    <PackageReference Include="MudBlazor" Version="6.17.0" />
     <PackageReference Include="NaturalSort.Extension" Version="4.3.0" />
     <PackageReference Include="NPOI" Version="2.7.0" />
     <PackageReference Include="PublishSPAforGitHubPages.Build" Version="2.2.0" />
