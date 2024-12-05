@@ -4,14 +4,15 @@
 @inject NavigationManager Navigation
 
 <MudThemeProvider />
-<MudDialogProvider/>
-<MudSnackbarProvider/>
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudText Typo="Typo.h5" Class="mt-1">Mark2</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Inherit"
-            Href="https://mark2.sfc.keio.ac.jp" Target="_blank" />
+        <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Inherit" Href="https://mark2.sfc.keio.ac.jp"
+            Target="_blank" />
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit"
             Href="https://github.com/mark2-omr/Mark2" Target="_blank" />
     </MudAppBar>
