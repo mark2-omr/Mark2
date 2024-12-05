@@ -1,4 +1,6 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@inject IJSRuntime JSRuntime
+
+<Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="OnNavigateAsync">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -10,3 +12,10 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+@code {
+    private async Task OnNavigateAsync(Microsoft.AspNetCore.Components.Routing.NavigationContext args)
+    {
+        await JSRuntime.InvokeVoidAsync("gtag", "config", "G-PBM609WGEC", new { page_path = args.Path });
+    }
+}
