@@ -120,11 +120,11 @@
 @if (stopwatch.IsRunning || isCompleted)
 {
     <MudCard Style="margin-top: 2em;">
-    <MudCardContent>
-        <MudProgressLinear Color="Color.Primary" Min=0 Max=@imageFiles.Count Value="@processed" />
-    </MudCardContent>
-    <MudCardActions Class="d-flex align-center justify-center" Style="padding-bottom: 1em;">
-        @if (stopwatch.IsRunning)
+        <MudCardContent>
+            <MudProgressLinear Color="Color.Primary" Min=0 Max=@imageFiles.Count Value="@processed" />
+        </MudCardContent>
+        <MudCardActions Class="d-flex align-center justify-center" Style="padding-bottom: 1em;">
+            @if (stopwatch.IsRunning)
             {
                 <MudFab HtmlTag="label" Color="Color.Primary" Label="@progressMessage" Disabled=true />
             }
@@ -140,12 +140,12 @@
 @if (isCompleted)
 {
     <MudCard Style="margin: 2em 0; height: 1000;">
-    <MudCardHeader>
-        <CardHeaderContent>
-            <MudText Typo="Typo.body1">@survey.ImageFiles[logIndex].Name</MudText>
-        </CardHeaderContent>
-        <CardHeaderActions>
-            @if (isLoadingLogImage)
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.body1">@survey.ImageFiles[logIndex].Name</MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                @if (isLoadingLogImage)
                 {
                     <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Default" Disabled=true />
                 }
@@ -336,7 +336,8 @@
                 progressMessage = $"{processed} / {imageFiles.Count}";
                 StateHasChanged();
                 await Task.Delay(1);
-            };
+            }
+        ;
             isCompleted = true;
         }, cts.Token);
 
@@ -356,9 +357,12 @@
     private async Task DownloadFile()
     {
         var dateTime = DateTime.Now;
+        string areaThreshold = ((int)(survey.AreaThreshold * 100)).ToString("D3");
+        string colorThreshold = ((int)(survey.ColorThreshold * 100)).ToString("D3");
+
         await JSRuntime.InvokeAsync<object>(
         "FileSaveAs",
-        $"Mark2-Result-{dateTime.ToString("yyyyMMdd_HHmmss")}.xlsx",
+        $"Mark2-Result-A{areaThreshold}-C{colorThreshold}-{dateTime.ToString("yyyyMMdd_HHmmss")}.xlsx",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         survey.ResultSpreadsheet()
         );
