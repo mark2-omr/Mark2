@@ -36,8 +36,7 @@
             @if (surveyId != null)
             {
                 <MudItem xs="12">
-                    <MudSelect @bind-Value="@repositoryPayloadName" T="string" Variant="Variant.Outlined"
-                        AnchorOrigin="Origin.BottomCenter">
+                    <MudSelect @bind-Value="@repositoryPayloadName" T="string" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft">
                         @foreach (var payload in survey.RepositoryPayloads)
                         {
                             <MudSelectItem T="string" Value=@payload.Name />
