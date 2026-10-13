@@ -22,7 +22,7 @@ env:
   TZ: Asia/Tokyo
   ASPNETCORE_ENVIRONMENT: Development
 
-# Publish the Blazor dev server (dotnet run --urls http://0.0.0.0:5051) on host port 5051
+# Publish the Blazor dev server (dotnet run --urls http://0.0.0.0:5051) on host port 5130
 ports:
-  - host: 5051
-    sandbox: 5051
+  - host: 5130
+    sandbox: 5130
