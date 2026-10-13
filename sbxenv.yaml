@@ -1,0 +1,28 @@
+schemaVersion: "1"
+
+# Choose the coding agent with: sbx env run --env-arg agent=codex .
+args:
+  agent:
+    default: claude
+    description: Coding agent to run in the sandbox
+
+agent: ${{ env.args.agent }}
+
+# Sandbox name: mark2-<agent> (e.g. mark2-claude)
+name: mark2-${{ env.args.agent }}
+
+# Mount the project directory (where this file lives) read/write
+workspace: .
+
+# .NET 11 SDK (see sbx/dotnet/spec.yaml)
+kits:
+  - ./sbx/dotnet
+
+env:
+  TZ: Asia/Tokyo
+  ASPNETCORE_ENVIRONMENT: Development
+
+# Publish the Blazor dev server (dotnet run --urls http://0.0.0.0:5051) on host port 5051
+ports:
+  - host: 5051
+    sandbox: 5051
