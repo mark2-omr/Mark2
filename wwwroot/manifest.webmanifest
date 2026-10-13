@@ -3,6 +3,7 @@
   "short_name": "Mark2 Desktop",
   "description": "Mark2 is an application for mark recognition.",
   "categories": ["utilities", "education"],
+  "id": "./",
   "start_url": "./",
   "display_override": ["window-controls-overlay"],
   "display": "standalone",

@@ -229,7 +229,6 @@
         if (surveyId != null)
         {
             isLoadingRepository = true;
-            StateHasChanged();
             await Task.Delay(1);
 
             try
@@ -316,7 +315,6 @@
         logIndex = 0;
         stopwatch = new();
         stopwatch.Start();
-        StateHasChanged();
         await Task.Delay(1);
 
         await Task.Run(async () =>
@@ -359,8 +357,7 @@
         string areaThreshold = ((int)(survey.AreaThreshold * 100)).ToString("D3");
         string colorThreshold = ((int)(survey.ColorThreshold * 100)).ToString("D3");
 
-        await JSRuntime.InvokeAsync<object>(
-        "FileSaveAs",
+        await FileSaveAs(
         $"Mark2-Result-A{areaThreshold}-C{colorThreshold}-{dateTime.ToString("yyyyMMdd_HHmmss")}.xlsx",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         survey.ResultSpreadsheet()
@@ -369,12 +366,23 @@
 
     private async Task DownloadLogImage()
     {
-        await JSRuntime.InvokeAsync<object>(
-        "FileSaveAs",
+        await FileSaveAs(
         $"Mark2-Log-{Path.GetFileNameWithoutExtension(imageFiles[logIndex].Name)}.png",
         "image/png",
         survey.SelectedLogImage
         );
+    }
+
+    private async Task FileSaveAs(string filename, string contentType, string content)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("FileSaveAs", filename, contentType, content);
+        }
+        catch (JSException ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
     }
 
     private async Task IncrementLogIndex()
