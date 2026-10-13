@@ -1,0 +1,64 @@
+schemaVersion: "2"
+kind: mixin
+name: dotnet-sdk
+version: "0.1.0"
+displayName: .NET SDK
+description: Install the .NET SDK (11 RC2 by default) with dotnet-install.sh
+
+# Override with: --kit-arg dotnet-sdk.version=x.y.z
+args:
+  version:
+    default: "11.0.100-rc.2.26504.105"
+    description: SDK version passed to dotnet-install.sh
+    pattern: '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'
+
+permissions:
+  network:
+    allow:
+      - dot.net
+      - builds.dotnet.microsoft.com
+      - ci.dot.net
+      - dotnetcli.azureedge.net
+      - dotnetbuilds.azureedge.net
+      - api.nuget.org
+      - "*.nuget.org"
+      - aka.ms
+
+ports:
+  - container: 5051
+    name: blazor-dev
+
+environment:
+  variables:
+    DOTNET_ROOT: /usr/local/share/dotnet
+    DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+    DOTNET_NOLOGO: "1"
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
+    NUGET_PACKAGES: /home/agent/.nuget/packages
+
+setup:
+  install:
+    - command: |
+        apt-get update -qq && \
+        apt-get install --no-install-recommends -y curl ca-certificates libicu-dev && \
+        rm -rf /var/lib/apt/lists/*
+      user: "0"
+      description: Install .NET native dependencies
+    - command: |
+        curl -fsSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh && \
+        bash /tmp/dotnet-install.sh --version ${{ kit.args.version }} --install-dir /usr/local/share/dotnet && \
+        ln -sf /usr/local/share/dotnet/dotnet /usr/local/bin/dotnet && \
+        rm /tmp/dotnet-install.sh
+      user: "0"
+      description: Install .NET SDK ${{ kit.args.version }}
+    - command: |
+        echo 'export PATH="$PATH:/home/agent/.dotnet/tools"' >> /etc/sandbox-persistent.sh
+      user: "0"
+      description: Put dotnet global tools on PATH
+
+agentInstructions:
+  content: |
+    ## Mark2 (.NET) sandbox
+    - .NET SDK ${{ kit.args.version }} is installed at /usr/local/share/dotnet.
+    - Run the dev server bound to all interfaces so the published port works:
+      `dotnet run --project Mark2 --urls http://0.0.0.0:5051`
