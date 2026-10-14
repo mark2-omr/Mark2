@@ -153,7 +153,7 @@ public class Item
             CenterY = topLeft[1] + (int)ys.Average()
         };
 
-        FillRect(square.X, square.Y, square.Width, square.Height, Rgba32.ParseHex("#FF0000FF"), 0.8f);
+        FillRect(square.X, square.Y, square.Width, square.Height, Color.ParseHex("#FF0000FF").ToPixel<Rgba32>(), 0.8f);
 
         return square;
     }
@@ -267,12 +267,12 @@ public class Item
                     {
                         _answers.Add(area.Value);
                         FillRect(topLeft[0], topLeft[1], bottomRight[0] - topLeft[0], bottomRight[1] - topLeft[1],
-                            Rgba32.ParseHex("#00FF00FF"), 0.4f);
+                            Color.ParseHex("#00FF00FF").ToPixel<Rgba32>(), 0.4f);
                     }
                     else
                     {
                         FillRect(topLeft[0], topLeft[1], bottomRight[0] - topLeft[0], bottomRight[1] - topLeft[1],
-                            Rgba32.ParseHex("#FF0000FF"), 0.4f);
+                            Color.ParseHex("#FF0000FF").ToPixel<Rgba32>(), 0.4f);
                     }
                 }
             }
@@ -358,7 +358,7 @@ public class Item
                 }
 
                 FillRect(topLeft[0], topLeft[1], bottomRight[0] - topLeft[0], bottomRight[1] - topLeft[1],
-                    Rgba32.ParseHex("#0000FFFF"), 0.4f);
+                    Color.ParseHex("#0000FFFF").ToPixel<Rgba32>(), 0.4f);
             }
             else if (question.Type == 3)
             {
@@ -382,7 +382,7 @@ public class Item
     {
         LogImage = Image.Clone();
         FillRect(0, 0, LogImage.Width, LogImage.Height,
-            Rgba32.ParseHex("#FF0000FF"), 0.4f);
+            Color.ParseHex("#FF0000FF").ToPixel<Rgba32>(), 0.4f);
 
         MemoryStream stream = new();
         LogImage.SaveAsPng(stream);

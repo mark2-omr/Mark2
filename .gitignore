@@ -334,3 +334,6 @@ ASALocalRun/
 .localhistory/
 
 .DS_Store
+
+# Six Labors license file (ImageSharp)
+sixlabors.lic
