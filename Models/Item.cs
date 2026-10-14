@@ -2,6 +2,7 @@
 
 using Microsoft.JSInterop;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
@@ -17,6 +18,13 @@ public class Item
     public double AreaThreshold { get; set; }
     public List<List<int>> Answers { get; set; }
     private readonly IJSRuntime _js;
+
+    // Always encode as RGB; otherwise the encoder inherits the source format (e.g. grayscale JPEG) and drops the overlay colors
+    private static readonly PngEncoder LogImageEncoder = new()
+    {
+        ColorType = PngColorType.Rgb,
+        BitDepth = PngBitDepth.Bit8
+    };
 
     public Item(int pid, Page page, double colorThreshold, double areaThreshold, string name,
                 Image<Rgba32> image, IJSRuntime js)
@@ -385,14 +393,14 @@ public class Item
             Color.ParseHex("#FF0000FF").ToPixel<Rgba32>(), 0.4f);
 
         MemoryStream stream = new();
-        LogImage.SaveAsPng(stream);
+        LogImage.SaveAsPng(stream, LogImageEncoder);
         return Convert.ToBase64String(stream.ToArray());
     }
 
     public string LogImageBase64()
     {
         MemoryStream stream = new();
-        LogImage.SaveAsPng(stream);
+        LogImage.SaveAsPng(stream, LogImageEncoder);
         return Convert.ToBase64String(stream.ToArray());
     }
 }
