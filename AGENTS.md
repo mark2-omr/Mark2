@@ -87,3 +87,19 @@ Measured in an 8 GB sbx sandbox (no swap, 10 CPUs): the default build was killed
 - Do not commit directly to `main`; create a branch and open a PR.
 - Commit messages are short, imperative English sentences (e.g. `Update MudBlazor from 8.15.0 to 9.11.0`), with details in the body when useful.
 - Pushing to `main` deploys to production (GitHub Pages).
+
+### Pushing from the sbx sandbox
+
+`origin` is an SSH remote (`git@github.com:mark2-omr/Mark2.git`), but SSH connections from the sandbox are rejected:
+
+```
+Connection closed by ... port 22
+fatal: Could not read from remote repository.
+```
+
+The sandbox proxy injects GitHub credentials only for HTTPS. Push to the HTTPS URL instead, without changing `origin`:
+
+```sh
+git push https://github.com/mark2-omr/Mark2.git <branch>
+gh pr create --repo mark2-omr/Mark2 --base main --head <branch>
+```
