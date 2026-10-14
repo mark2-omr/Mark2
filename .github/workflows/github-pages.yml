@@ -34,6 +34,8 @@ jobs:
       - name: Install wasm-tools
         run: dotnet workload install wasm-tools
       - name: Publish
+        env:
+          SixLaborsLicenseKey: ${{ secrets.SIXLABORS_LICENSE_KEY }}
         run: dotnet publish Mark2.csproj -p:GHPages=true -p:GHPagesBase=/ -c:Release -o:publish
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v5
