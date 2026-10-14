@@ -67,39 +67,208 @@ a, .btn-link {
         content: "An error has occurred."
     }
 
-.loading-progress {
-    position: absolute;
-    display: block;
-    width: 8rem;
-    height: 8rem;
-    inset: 20vh 0 auto 0;
-    margin: 0 auto 0 auto;
+.boot-screen {
+    --boot-cyan: #5fb6cd;
+    --boot-glow: #7fe8ff;
+    --boot-bg: #03173d;
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    color: var(--boot-glow);
+    font-family: 'Orbitron', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background: radial-gradient(ellipse at 50% 40%, #0a2c66 0%, var(--boot-bg) 45%, #010814 100%);
+    z-index: 0;
 }
 
-    .loading-progress circle {
-        fill: none;
-        stroke: #e0e0e0;
-        stroke-width: 0.6rem;
-        transform-origin: 50% 50%;
-        transform: rotate(-90deg);
+    /* scanlines */
+    .boot-screen::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(to bottom, rgba(127, 232, 255, 0.04) 0, rgba(127, 232, 255, 0.04) 1px, transparent 1px, transparent 3px);
+        pointer-events: none;
+        z-index: 2;
     }
 
-        .loading-progress circle:last-child {
-            stroke: #1b6ec2;
-            stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
-            transition: stroke-dasharray 0.05s ease-in-out;
-        }
+    /* vignette */
+    .boot-screen::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.6) 100%);
+        pointer-events: none;
+        z-index: 2;
+    }
+
+.boot-grid {
+    position: absolute;
+    left: -50%;
+    right: -50%;
+    bottom: -10%;
+    height: 55%;
+    background-image: linear-gradient(rgba(95, 182, 205, 0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(95, 182, 205, 0.35) 1px, transparent 1px);
+    background-size: 3rem 3rem;
+    transform: perspective(400px) rotateX(65deg);
+    transform-origin: 50% 0;
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 60%);
+    animation: boot-grid-scroll 1.6s linear infinite;
+    z-index: 0;
+}
+
+.boot-core {
+    position: relative;
+    width: 12rem;
+    height: 12rem;
+    z-index: 1;
+}
+
+.boot-ring {
+    position: absolute;
+    border-radius: 50%;
+}
+
+.boot-ring-outer {
+    inset: 0;
+    border: 1px dashed rgba(127, 232, 255, 0.5);
+    animation: boot-spin 18s linear infinite;
+}
+
+.boot-ring-arcs {
+    inset: 0.6rem;
+    border: 2px solid transparent;
+    border-top-color: var(--boot-glow);
+    border-bottom-color: var(--boot-cyan);
+    filter: drop-shadow(0 0 6px var(--boot-glow));
+    animation: boot-spin 2.4s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite reverse;
+}
+
+.boot-ring-ticks {
+    inset: 1.4rem;
+    background: repeating-conic-gradient(rgba(127, 232, 255, 0.55) 0deg 1deg, transparent 1deg 10deg);
+    mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+    animation: boot-spin 30s linear infinite;
+}
+
+.boot-progress {
+    position: absolute;
+    inset: 2.2rem;
+    border-radius: 50%;
+    background:
+        conic-gradient(var(--boot-glow) var(--blazor-load-percentage, 0%), rgba(95, 182, 205, 0.15) 0);
+    mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+    filter: drop-shadow(0 0 8px var(--boot-glow));
+    transition: background 0.1s ease-out;
+}
+
+.boot-sweep {
+    position: absolute;
+    inset: 2.2rem;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, transparent 0deg, rgba(127, 232, 255, 0.25) 50deg, transparent 60deg);
+    animation: boot-spin 3s linear infinite;
+}
 
 .loading-progress-text {
     position: absolute;
-    text-align: center;
-    font-weight: bold;
-    inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #fff;
+    text-shadow: 0 0 8px var(--boot-glow), 0 0 18px var(--boot-cyan);
 }
 
     .loading-progress-text:after {
-        content: var(--blazor-load-percentage-text, "Loading");
+        content: var(--blazor-load-percentage-text, "0%");
     }
+
+.boot-title {
+    position: relative;
+    z-index: 1;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 0.6em;
+    margin-right: -0.6em;
+    color: #fff;
+    text-shadow: 0 0 6px var(--boot-glow), 0 0 20px var(--boot-cyan), 0 0 40px rgba(95, 182, 205, 0.6);
+    animation: boot-flicker 4s linear infinite;
+}
+
+.boot-status {
+    position: relative;
+    z-index: 1;
+    margin-top: -0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.4em;
+    margin-right: -0.4em;
+    color: var(--boot-cyan);
+    animation: boot-blink 1.2s steps(2, start) infinite;
+}
+
+.boot-bar {
+    position: relative;
+    z-index: 1;
+    width: min(18rem, calc(100vw - 4rem));
+    height: 3px;
+    background: rgba(95, 182, 205, 0.2);
+    overflow: hidden;
+}
+
+    .boot-bar span {
+        display: block;
+        height: 100%;
+        width: var(--blazor-load-percentage, 0%);
+        background: linear-gradient(90deg, var(--boot-cyan), #fff);
+        box-shadow: 0 0 10px var(--boot-glow);
+        transition: width 0.1s ease-out;
+    }
+
+.boot-corner {
+    position: absolute;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0 solid rgba(127, 232, 255, 0.6);
+    z-index: 1;
+}
+
+.boot-corner-tl { top: 1.5rem; left: 1.5rem; border-top-width: 2px; border-left-width: 2px; }
+.boot-corner-tr { top: 1.5rem; right: 1.5rem; border-top-width: 2px; border-right-width: 2px; }
+.boot-corner-bl { bottom: 1.5rem; left: 1.5rem; border-bottom-width: 2px; border-left-width: 2px; }
+.boot-corner-br { bottom: 1.5rem; right: 1.5rem; border-bottom-width: 2px; border-right-width: 2px; }
+
+@keyframes boot-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes boot-grid-scroll {
+    from { background-position: 0 0; }
+    to { background-position: 0 3rem; }
+}
+
+@keyframes boot-blink {
+    to { opacity: 0.35; }
+}
+
+@keyframes boot-flicker {
+    0%, 92%, 96%, 100% { opacity: 1; }
+    94% { opacity: 0.4; }
+    95% { opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .boot-screen *, .boot-screen *::before, .boot-screen *::after {
+        animation: none !important;
+    }
+}
 
 code {
     color: #c02d76;
