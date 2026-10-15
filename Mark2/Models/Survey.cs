@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Drawing = DocumentFormat.OpenXml.Drawing;
 using Spreadsheet = DocumentFormat.OpenXml.Spreadsheet;
 
 public class Survey
@@ -341,10 +342,30 @@ public class Survey
     private static void UseJapaneseDefaultFont(Stream stream)
     {
         using var document = SpreadsheetDocument.Open(stream, true);
-        var font = document.WorkbookPart!.WorkbookStylesPart!.Stylesheet!.Fonts!.Elements<Spreadsheet.Font>().First();
+        var workbookPart = document.WorkbookPart!;
+
+        // Excel takes the font of the minor scheme from the theme, which ClosedXML sets to ＭＳ Ｐゴシック for Japanese
+        var fontScheme = workbookPart.ThemePart!.Theme!.ThemeElements!.FontScheme!;
+        SetJapaneseThemeFont(fontScheme.MajorFont!, "游ゴシック Light");
+        SetJapaneseThemeFont(fontScheme.MinorFont!, "游ゴシック");
+
+        var font = workbookPart.WorkbookStylesPart!.Stylesheet!.Fonts!.Elements<Spreadsheet.Font>().First();
         font.FontName = new Spreadsheet.FontName { Val = "游ゴシック" };
         font.FontCharSet = new Spreadsheet.FontCharSet { Val = 128 };
         font.FontScheme = new Spreadsheet.FontScheme { Val = Spreadsheet.FontSchemeValues.Minor };
+    }
+
+    private static void SetJapaneseThemeFont(Drawing.FontCollectionType fonts, string typeface)
+    {
+        var font = fonts.Elements<Drawing.SupplementalFont>().FirstOrDefault(f => f.Script == "Jpan");
+        if (font is null)
+        {
+            fonts.AppendChild(new Drawing.SupplementalFont { Script = "Jpan", Typeface = typeface });
+        }
+        else
+        {
+            font.Typeface = typeface;
+        }
     }
 
     // Same indexed colors as NPOI's IndexedColors.Gold (51) and IndexedColors.Coral (29)
