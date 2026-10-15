@@ -4,7 +4,7 @@ Guidance for coding agents working in this repository.
 
 ## Overview
 
-Mark2 is a mark recognition (OMR) web app. It is a single-project Blazor WebAssembly app (`Mark2.csproj`) that runs entirely in the browser and is deployed to GitHub Pages. Users load a layout (from a file or from `https://repository.mark2.org/<surveyId>.json`) and scanned images, run recognition, and download the results as a spreadsheet.
+Mark2 is a mark recognition (OMR) web app. It is a Blazor WebAssembly app (`Mark2/Mark2.csproj`) that runs entirely in the browser and is deployed to GitHub Pages. Users load a layout (from a file or from `https://repository.mark2.org/<surveyId>.json`) and scanned images, run recognition, and download the results as a spreadsheet.
 
 ## Tech stack
 
@@ -16,8 +16,12 @@ Mark2 is a mark recognition (OMR) web app. It is a single-project Blazor WebAsse
 
 ## Layout
 
+The repository is managed by the `Mark2.slnx` solution at the root. Each project lives in its own `<ProjectName>/` directory at the root and is added to the solution with `dotnet sln Mark2.slnx add <ProjectName>/<ProjectName>.csproj`. Paths below `Mark2/` are relative to the app project.
+
 | Path | Contents |
 | --- | --- |
+| `Mark2.slnx` | Solution file (all projects) |
+| `Mark2/` | The Blazor WebAssembly app |
 | `Program.cs` | Host setup (localization, MudBlazor services) |
 | `Pages/Index.razor` | The main (and only) page: UI and workflow |
 | `Pages/Index.resx`, `Pages/Index.ja.resx` | UI strings (English / Japanese) |
@@ -32,10 +36,10 @@ Mark2 is a mark recognition (OMR) web app. It is a single-project Blazor WebAsse
 ## Commands
 
 ```sh
-dotnet build                                  # build (Debug)
-dotnet run                                    # dev server on http://localhost:5130
-dotnet run --urls http://0.0.0.0:5130         # inside the sbx sandbox (reachable from host)
-dotnet publish -c Release -p GHPages=true -p GHPagesBase=/   # production build (needs wasm-tools)
+dotnet build                                              # build all projects in Mark2.slnx (Debug)
+dotnet run --project Mark2                                # dev server on http://localhost:5130
+dotnet run --project Mark2 --urls http://0.0.0.0:5130     # inside the sbx sandbox (reachable from host)
+dotnet publish Mark2 -c Release -p GHPages=true -p GHPagesBase=/   # production build (needs wasm-tools)
 ```
 
 There is no test project. Verify changes with `dotnet build` and, for UI or recognition changes, by running the app.
@@ -68,18 +72,18 @@ cat /sys/fs/cgroup/memory.max 2>/dev/null # container memory limit, if any ("max
 
 ```sh
 # About 8 GB: lower the link optimization level
-dotnet publish -c Release -p GHPages=true -p GHPagesBase=/ -p:EmccLinkOptimizationFlag=-O1
+dotnet publish Mark2 -c Release -p GHPages=true -p GHPagesBase=/ -p:EmccLinkOptimizationFlag=-O1
 ```
 
 Measured in an 8 GB sbx sandbox (no swap, 10 CPUs): the default build was killed at a peak of about 7.9 GB (`wasm-opt` alone used up to about 7.5 GB), while `-O1` completed at a peak of about 6.5 GB in about 2.5 minutes. The 12 GB threshold for the default build is an estimate, not a measurement; if the default build is killed, retry with `-O1`.
 
-`-O1` is only for verifying the build locally. Do not add it to `Mark2.csproj` or the workflow: GitHub Actions runners have enough memory for the default `-O2`, which produces the deployed build.
+`-O1` is only for verifying the build locally. Do not add it to `Mark2/Mark2.csproj` or the workflow: GitHub Actions runners have enough memory for the default `-O2`, which produces the deployed build.
 
 ## Conventions
 
-- Add user-facing strings to both `Pages/Index.resx` and `Pages/Index.ja.resx`, and use them through `IStringLocalizer` (`Loc["Key"]`).
+- Add user-facing strings to both `Mark2/Pages/Index.resx` and `Mark2/Pages/Index.ja.resx`, and use them through `IStringLocalizer` (`Loc["Key"]`).
 - Use ImageSharp 4 APIs (e.g. `Color.ParseHex(...).ToPixel<Rgba32>()`; `Rgba32.ParseHex` no longer exists). Encode debug log images as RGB PNG so overlays keep their color on grayscale scans.
-- ImageSharp 4 needs a Six Labors license key at build time: the `SixLaborsLicenseKey` environment variable (CI uses the `SIXLABORS_LICENSE_KEY` secret) or a local `sixlabors.lic`. Never commit the key or `sixlabors.lic`.
+- ImageSharp 4 needs a Six Labors license key at build time: the `SixLaborsLicenseKey` environment variable (CI uses the `SIXLABORS_LICENSE_KEY` secret) or a local `sixlabors.lic` under `Mark2/` (the build searches the project directory recursively). Never commit the key or `sixlabors.lic`.
 - Keep the code style of the surrounding code (nullable enabled, implicit usings, collection expressions).
 
 ## Git and PRs

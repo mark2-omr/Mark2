@@ -2,7 +2,7 @@
 
 Mark2 is a web application for mark recognition.
 
-It is a Blazor WebAssembly app built with [MudBlazor](https://mudblazor.com/), and runs entirely in the browser. It is deployed to GitHub Pages.
+The solution (`Mark2.slnx`) contains the app project in `Mark2/`. It is a Blazor WebAssembly app built with [MudBlazor](https://mudblazor.com/), and runs entirely in the browser. It is deployed to GitHub Pages.
 
 ## Requirements
 
@@ -16,7 +16,7 @@ It is a Blazor WebAssembly app built with [MudBlazor](https://mudblazor.com/), a
 ## Testing locally
 
 ```sh
-% dotnet run
+% dotnet run --project Mark2
 ```
 
 The dev server listens on http://localhost:5130 (https://localhost:7202 with the `https` profile).
@@ -24,13 +24,14 @@ The dev server listens on http://localhost:5130 (https://localhost:7202 with the
 ## Build
 
 ```sh
-% dotnet publish -c Release -p GHPages=true -p GHPagesBase=/
+% dotnet build                    # build all projects in the solution
+% dotnet publish Mark2 -c Release -p GHPages=true -p GHPagesBase=/
 ```
 
-ImageSharp 4 requires a Six Labors license key at build time. Set it in the `SixLaborsLicenseKey` environment variable, or put it in a local `sixlabors.lic` file (ignored by git).
+ImageSharp 4 requires a Six Labors license key at build time. Set it in the `SixLaborsLicenseKey` environment variable, or put it in a local `Mark2/sixlabors.lic` file (ignored by git).
 
 ```sh
-% SixLaborsLicenseKey=... dotnet publish -c Release -p GHPages=true -p GHPagesBase=/
+% SixLaborsLicenseKey=... dotnet publish Mark2 -c Release -p GHPages=true -p GHPagesBase=/
 ```
 
 ## Deployment
@@ -49,5 +50,5 @@ Pushing to `main` runs `.github/workflows/github-pages.yml`, which publishes the
 Inside the sandbox, bind the dev server to all interfaces so it is reachable from the host on port 5130:
 
 ```sh
-% dotnet run --urls http://0.0.0.0:5130
+% dotnet run --project Mark2 --urls http://0.0.0.0:5130
 ```
