@@ -11,7 +11,7 @@ Mark2 is a mark recognition (OMR) web app. It is a Blazor WebAssembly app (`Mark
 - .NET 11 (RC2) / Blazor WebAssembly, AOT + SIMD in Release builds
 - MudBlazor 9 for UI
 - SixLabors.ImageSharp 4 for image processing
-- NPOI for spreadsheet output (SkiaSharp is referenced only so that AOT can compile NPOI.OOXML)
+- ClosedXML for reading layout spreadsheets and writing result spreadsheets
 - ONNX Runtime Web (`wwwroot/js/ort/`) for handwritten digit recognition via JS interop (`runOnnxRuntime`)
 
 ## Layout

@@ -1,14 +1,13 @@
 ﻿namespace Mark2;
 
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using NaturalSort.Extension;
-using NPOI.SS.Formula.Functions;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Json;
@@ -112,31 +111,31 @@ public class Survey
     public void SetupPositionsFromFile(MemoryStream ms)
     {
         Pages = [];
-        var workbook = new XSSFWorkbook(ms);
-        var sheet = workbook.GetSheetAt(0);
-        var row = sheet.GetRow(0);
+        using var workbook = new XLWorkbook(ms);
+        var sheet = workbook.Worksheet(1);
+        var row = sheet.Row(1);
 
         List<int> vs = [];
-        for (int i = 1; i <= row.LastCellNum / 4; i++)
+        for (int i = 1; i <= LastCellNum(row) / 4; i++)
         {
             try
             {
-                vs.Add(Convert.ToInt32(row.GetCell(i * 4).NumericCellValue));
+                vs.Add(NumericCellValue(GetCell(row, i * 4)));
             }
             catch (Exception)
             {
             }
         }
 
-        for (int i = 3; i <= sheet.LastRowNum; i++)
+        for (int i = 3; i <= LastRowNum(sheet); i++)
         {
             int pageNumber;
             Question question;
 
             try
             {
-                row = sheet.GetRow(i);
-                pageNumber = Convert.ToInt32(row.GetCell(2).NumericCellValue);
+                row = sheet.Row(i + 1);
+                pageNumber = NumericCellValue(GetCell(row, 2));
                 while (Pages.Count < pageNumber)
                 {
                     Pages.Add(new Page());
@@ -144,8 +143,8 @@ public class Survey
 
                 question = new()
                 {
-                    Text = row.GetCell(1).ToString(),
-                    Type = Convert.ToInt32(row.GetCell(3).NumericCellValue)
+                    Text = StringCellValue(GetCell(row, 1)),
+                    Type = NumericCellValue(GetCell(row, 3))
                 };
             }
             catch (Exception)
@@ -153,16 +152,16 @@ public class Survey
                 continue;
             }
 
-            for (int j = 1; j <= row.LastCellNum / 4; j++)
+            for (int j = 1; j <= LastCellNum(row) / 4; j++)
             {
                 try
                 {
                     Area area = new()
                     {
-                        X = Convert.ToInt32(row.GetCell(j * 4).NumericCellValue),
-                        Y = Convert.ToInt32(row.GetCell(j * 4 + 1).NumericCellValue),
-                        Width = Convert.ToInt32(row.GetCell(j * 4 + 2).NumericCellValue),
-                        Height = Convert.ToInt32(row.GetCell(j * 4 + 3).NumericCellValue),
+                        X = NumericCellValue(GetCell(row, j * 4)),
+                        Y = NumericCellValue(GetCell(row, j * 4 + 1)),
+                        Width = NumericCellValue(GetCell(row, j * 4 + 2)),
+                        Height = NumericCellValue(GetCell(row, j * 4 + 3)),
                         Value = vs[j - 1]
                     };
 
@@ -175,6 +174,28 @@ public class Survey
             Pages[pageNumber - 1].Questions.Add(question);
         }
     }
+
+    // Helpers that keep the 0-based indices and the error behavior of the former NPOI code:
+    // reading an empty cell or a non-numeric cell as a number throws, and callers skip it.
+    private static IXLCell GetCell(IXLRow row, int columnIndex) => row.Cell(columnIndex + 1);
+
+    private static int LastCellNum(IXLRow row) => row.LastCellUsed()?.Address.ColumnNumber ?? 0;
+
+    private static int LastRowNum(IXLWorksheet sheet) => (sheet.LastRowUsed()?.RowNumber() ?? 0) - 1;
+
+    private static XLCellValue CellValue(IXLCell cell)
+    {
+        var value = cell.HasFormula ? cell.CachedValue : cell.Value;
+        if (value.IsBlank)
+        {
+            throw new InvalidOperationException($"Cell {cell.Address} is empty.");
+        }
+        return value;
+    }
+
+    private static int NumericCellValue(IXLCell cell) => Convert.ToInt32(CellValue(cell).GetNumber());
+
+    private static string StringCellValue(IXLCell cell) => CellValue(cell).ToString(CultureInfo.CurrentCulture);
 
     public async Task Recognize(int index, IJSRuntime js, bool updateLogImage = false)
     {
@@ -225,35 +246,31 @@ public class Survey
 
     public string ResultSpreadsheet()
     {
-        var workbook = new XSSFWorkbook();
-        var sheet = workbook.CreateSheet("Sheet1");
+        using var workbook = new XLWorkbook();
+        var sheet = workbook.AddWorksheet("Sheet1");
 
         // first header
-        var row = sheet.CreateRow(0);
-        var cell = row.CreateCell(0);
-        cell.SetCellValue("No");
-        cell = row.CreateCell(1);
-        cell.SetCellValue("File");
+        var row = sheet.Row(1);
+        GetCell(row, 0).Value = "No";
+        GetCell(row, 1).Value = "File";
         int questionIndex = 0;
         foreach (var page in Pages)
         {
             foreach (var question in page.Questions)
             {
-                cell = row.CreateCell(questionIndex + 2);
-                cell.SetCellValue(questionIndex + 1);
+                GetCell(row, questionIndex + 2).Value = questionIndex + 1;
                 questionIndex++;
             }
         }
 
         // second header
-        row = sheet.CreateRow(1);
+        row = sheet.Row(2);
         questionIndex = 0;
         foreach (var page in Pages)
         {
             foreach (var question in page.Questions)
             {
-                cell = row.CreateCell(questionIndex + 2);
-                cell.SetCellValue(question.Text);
+                GetCell(row, questionIndex + 2).Value = question.Text;
                 questionIndex++;
             }
         }
@@ -267,9 +284,8 @@ public class Survey
             if (itemIndex % Pages.Count == 0)
             {
                 rowIndex++;
-                row = sheet.CreateRow(rowIndex);
-                cell = row.CreateCell(0);
-                cell.SetCellValue(rowIndex - 1);
+                row = sheet.Row(rowIndex + 1);
+                GetCell(row, 0).Value = rowIndex - 1;
                 questionIndex = 2;
                 names = [];
             }
@@ -277,29 +293,23 @@ public class Survey
             names.Add(_answers.Key);
             foreach (var answer in _answers.Value)
             {
-                cell = row.CreateCell(questionIndex);
+                var cell = GetCell(row, questionIndex);
                 if (answer.Count == 0)
                 {
-                    var cellStyle = workbook.CreateCellStyle();
-                    cellStyle.FillPattern = FillPattern.SolidForeground;
-                    cellStyle.FillForegroundColor = IndexedColors.Gold.Index;
-                    cell.CellStyle = cellStyle;
+                    cell.Style.Fill.BackgroundColor = Gold;
                 }
                 else if (answer.Count == 1)
                 {
-                    cell.SetCellValue(answer[0]);
+                    cell.Value = answer[0];
                 }
                 else if (answer.Count > 1)
                 {
-                    var cellStyle = workbook.CreateCellStyle();
-                    cellStyle.FillPattern = FillPattern.SolidForeground;
-                    cellStyle.FillForegroundColor = IndexedColors.Coral.Index;
-                    cell.CellStyle = cellStyle;
+                    cell.Style.Fill.BackgroundColor = Coral;
 
                     var cellValue = string.Join(";", answer);
                     if (cellValue != "-999;-999")
                     {
-                        cell.SetCellValue(cellValue);
+                        cell.Value = cellValue;
                     }
                 }
 
@@ -309,15 +319,18 @@ public class Survey
             // last page
             if ((itemIndex + 1) % Pages.Count == 0 || itemIndex + 1 == Answers.Count)
             {
-                cell = row.CreateCell(1);
-                cell.SetCellValue(string.Join(";", names));
+                GetCell(row, 1).Value = string.Join(";", names);
             }
 
             itemIndex++;
         }
 
         MemoryStream stream = new();
-        workbook.Write(stream);
+        workbook.SaveAs(stream);
         return Convert.ToBase64String(stream.ToArray());
     }
+
+    // Same indexed colors as NPOI's IndexedColors.Gold (51) and IndexedColors.Coral (29)
+    private static readonly XLColor Gold = XLColor.FromIndex(51);
+    private static readonly XLColor Coral = XLColor.FromIndex(29);
 }

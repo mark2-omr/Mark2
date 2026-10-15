@@ -7,7 +7,6 @@
     <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
     <StaticWebAssetSpaFallbackEnabled>true</StaticWebAssetSpaFallbackEnabled>
     <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
-    <AcceptNPOIOSMFLicense>true</AcceptNPOIOSMFLicense>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -16,16 +15,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="11.0.0-rc.2.26504.105" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Gateway" Version="11.0.0-rc.2.26504.105" PrivateAssets="all" />
     <PackageReference Include="MudBlazor" Version="9.11.0" />
     <PackageReference Include="NaturalSort.Extension" Version="4.4.1" />
-    <PackageReference Include="NPOI" Version="2.8.1" />
     <PackageReference Include="PublishSPAforGitHubPages.Build" Version="3.0.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="4.1.3" />
-    <!-- NPOI 2.8+ excludes SkiaSharp from runtime assets, but AOT needs the assembly to compile NPOI.OOXML -->
-    <PackageReference Include="SkiaSharp" Version="4.153.1" />
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="11.0.0-rc.2.26504.105" />
   </ItemGroup>
 
   <ItemGroup>
