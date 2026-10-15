@@ -116,7 +116,6 @@ a, .btn-link {
     transform: perspective(400px) rotateX(65deg);
     transform-origin: 50% 0;
     mask-image: linear-gradient(to bottom, transparent 0%, #000 60%);
-    animation: boot-grid-scroll 1.6s linear infinite;
     z-index: 0;
 }
 
@@ -130,6 +129,7 @@ a, .btn-link {
 .boot-ring {
     position: absolute;
     border-radius: 50%;
+    will-change: transform;
 }
 
 .boot-ring-outer {
@@ -162,7 +162,6 @@ a, .btn-link {
         conic-gradient(var(--boot-glow) var(--blazor-load-percentage, 0%), rgba(95, 182, 205, 0.15) 0);
     mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
     filter: drop-shadow(0 0 8px var(--boot-glow));
-    transition: background 0.1s ease-out;
 }
 
 .boot-sweep {
@@ -170,6 +169,7 @@ a, .btn-link {
     inset: 2.2rem;
     border-radius: 50%;
     background: conic-gradient(from 0deg, transparent 0deg, rgba(127, 232, 255, 0.25) 50deg, transparent 60deg);
+    will-change: transform;
     animation: boot-spin 3s linear infinite;
 }
 
@@ -199,7 +199,6 @@ a, .btn-link {
     margin-right: -0.6em;
     color: #fff;
     text-shadow: 0 0 6px var(--boot-glow), 0 0 20px var(--boot-cyan), 0 0 40px rgba(95, 182, 205, 0.6);
-    animation: boot-flicker 4s linear infinite;
 }
 
 .boot-status {
@@ -211,26 +210,7 @@ a, .btn-link {
     letter-spacing: 0.4em;
     margin-right: -0.4em;
     color: var(--boot-cyan);
-    animation: boot-blink 1.2s steps(2, start) infinite;
 }
-
-.boot-bar {
-    position: relative;
-    z-index: 1;
-    width: min(18rem, calc(100vw - 4rem));
-    height: 3px;
-    background: rgba(95, 182, 205, 0.2);
-    overflow: hidden;
-}
-
-    .boot-bar span {
-        display: block;
-        height: 100%;
-        width: var(--blazor-load-percentage, 0%);
-        background: linear-gradient(90deg, var(--boot-cyan), #fff);
-        box-shadow: 0 0 10px var(--boot-glow);
-        transition: width 0.1s ease-out;
-    }
 
 .boot-corner {
     position: absolute;
@@ -247,21 +227,6 @@ a, .btn-link {
 
 @keyframes boot-spin {
     to { transform: rotate(360deg); }
-}
-
-@keyframes boot-grid-scroll {
-    from { background-position: 0 0; }
-    to { background-position: 0 3rem; }
-}
-
-@keyframes boot-blink {
-    to { opacity: 0.35; }
-}
-
-@keyframes boot-flicker {
-    0%, 92%, 96%, 100% { opacity: 1; }
-    94% { opacity: 0.4; }
-    95% { opacity: 0.9; }
 }
 
 @media (prefers-reduced-motion: reduce) {
