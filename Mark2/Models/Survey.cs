@@ -1,6 +1,7 @@
 ﻿namespace Mark2;
 
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Packaging;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using NaturalSort.Extension;
@@ -12,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Spreadsheet = DocumentFormat.OpenXml.Spreadsheet;
 
 public class Survey
 {
@@ -327,7 +329,22 @@ public class Survey
 
         MemoryStream stream = new();
         workbook.SaveAs(stream);
+        if (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ja")
+        {
+            UseJapaneseDefaultFont(stream);
+        }
+
         return Convert.ToBase64String(stream.ToArray());
+    }
+
+    // ClosedXML always writes Calibri as the default font, so replace it with the default font of Japanese Excel
+    private static void UseJapaneseDefaultFont(Stream stream)
+    {
+        using var document = SpreadsheetDocument.Open(stream, true);
+        var font = document.WorkbookPart!.WorkbookStylesPart!.Stylesheet!.Fonts!.Elements<Spreadsheet.Font>().First();
+        font.FontName = new Spreadsheet.FontName { Val = "游ゴシック" };
+        font.FontCharSet = new Spreadsheet.FontCharSet { Val = 128 };
+        font.FontScheme = new Spreadsheet.FontScheme { Val = Spreadsheet.FontSchemeValues.Minor };
     }
 
     // Same indexed colors as NPOI's IndexedColors.Gold (51) and IndexedColors.Coral (29)
