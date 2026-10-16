@@ -418,52 +418,50 @@ code {
 /* Cards, the app bar and buttons glow like neon tubes in dark mode. */
 .dark-mode {
     --neon-glow: #7fe8ff;
-    --neon-cyan: #5fb6cd;
 }
 
 .dark-mode .mud-card {
-    border: 1px solid var(--neon-glow);
+    border: 1px solid rgba(127, 232, 255, 0.7);
     box-shadow:
-        0 0 4px var(--neon-glow),
-        0 0 14px rgba(95, 182, 205, 0.55),
-        0 0 32px rgba(95, 182, 205, 0.25),
-        inset 0 0 10px rgba(127, 232, 255, 0.18);
+        0 0 3px rgba(127, 232, 255, 0.5),
+        0 0 12px rgba(95, 182, 205, 0.25),
+        inset 0 0 8px rgba(127, 232, 255, 0.08);
 }
 
     .dark-mode .mud-card .mud-card-header .mud-typography {
         color: #fff;
-        text-shadow: 0 0 4px var(--neon-glow), 0 0 12px var(--neon-cyan);
+        text-shadow: 0 0 3px rgba(127, 232, 255, 0.6);
     }
 
 .dark-mode .mud-appbar {
     /* Also used by the selected item of the theme toggle. */
     --mud-palette-appbar-background: #0a1630;
-    border-bottom: 1px solid var(--neon-glow);
-    box-shadow: 0 0 4px var(--neon-glow), 0 0 16px rgba(95, 182, 205, 0.5);
+    border-bottom: 1px solid rgba(127, 232, 255, 0.7);
+    box-shadow: 0 0 3px rgba(127, 232, 255, 0.5), 0 0 10px rgba(95, 182, 205, 0.25);
 }
 
     .dark-mode .mud-appbar .mud-typography {
         color: #fff;
-        text-shadow: 0 0 4px var(--neon-glow), 0 0 12px var(--neon-cyan);
+        text-shadow: 0 0 3px rgba(127, 232, 255, 0.6);
     }
 
     .dark-mode .mud-appbar .theme-toggle {
-        border-color: var(--neon-glow);
-        box-shadow: 0 0 4px var(--neon-glow), inset 0 0 4px rgba(127, 232, 255, 0.4);
+        border-color: rgba(127, 232, 255, 0.7);
+        box-shadow: 0 0 3px rgba(127, 232, 255, 0.4);
     }
 
         .dark-mode .mud-appbar .theme-toggle::before {
             background-color: var(--neon-glow);
-            box-shadow: 0 0 8px var(--neon-glow);
+            box-shadow: 0 0 4px rgba(127, 232, 255, 0.5);
         }
 
 .dark-mode .mud-button-filled-primary,
 .dark-mode .mud-fab-primary {
     color: #fff;
-    background-color: rgba(127, 232, 255, 0.08);
-    border: 1px solid var(--neon-glow);
-    box-shadow: 0 0 4px var(--neon-glow), 0 0 12px rgba(95, 182, 205, 0.5), inset 0 0 8px rgba(127, 232, 255, 0.25);
-    text-shadow: 0 0 4px var(--neon-glow), 0 0 10px var(--neon-cyan);
+    background-color: rgba(127, 232, 255, 0.06);
+    border: 1px solid rgba(127, 232, 255, 0.7);
+    box-shadow: 0 0 3px rgba(127, 232, 255, 0.4), 0 0 8px rgba(95, 182, 205, 0.2), inset 0 0 6px rgba(127, 232, 255, 0.1);
+    text-shadow: 0 0 3px rgba(127, 232, 255, 0.5);
     --mud-ripple-color: var(--neon-glow);
 }
 
@@ -473,16 +471,16 @@ code {
     .dark-mode .mud-fab-primary:hover,
     .dark-mode .mud-fab-primary:focus-visible,
     .dark-mode .mud-fab-primary:active {
-        background-color: rgba(127, 232, 255, 0.2);
-        box-shadow: 0 0 6px var(--neon-glow), 0 0 20px rgba(95, 182, 205, 0.7), inset 0 0 12px rgba(127, 232, 255, 0.35);
+        background-color: rgba(127, 232, 255, 0.14);
+        box-shadow: 0 0 4px rgba(127, 232, 255, 0.6), 0 0 14px rgba(95, 182, 205, 0.35), inset 0 0 8px rgba(127, 232, 255, 0.2);
     }
 
     .dark-mode .mud-button-filled-primary .mud-icon-root,
     .dark-mode .mud-fab-primary .mud-icon-root {
-        filter: drop-shadow(0 0 3px var(--neon-glow));
+        filter: drop-shadow(0 0 2px rgba(127, 232, 255, 0.5));
     }
 
 .dark-mode .mud-icon-button.mud-primary-text {
     color: var(--neon-glow) !important;
-    filter: drop-shadow(0 0 4px var(--neon-glow));
+    filter: drop-shadow(0 0 2px rgba(127, 232, 255, 0.5));
 }
