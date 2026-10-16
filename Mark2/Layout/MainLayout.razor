@@ -1,24 +1,99 @@
 ﻿@inherits LayoutComponentBase
 
+@using Microsoft.Extensions.Localization
+
 @inject HttpClient Http
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject IStringLocalizer<Mark2.Pages.Index> Loc
 
-<MudThemeProvider />
+<MudThemeProvider @ref="themeProvider" @bind-IsDarkMode="isDarkMode" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudLayout>
     <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
+            OnClick="ToggleDrawer" />
         <MudText Typo="Typo.h5" Class="mt-1">Mark2</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Inherit" Href="https://mark2.sfc.keio.ac.jp"
-            Target="_blank" />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit"
-            Href="https://github.com/mark2-omr/Mark2" Target="_blank" />
+        <MudToggleGroup T="bool" Value="isDarkMode" ValueChanged="SetDarkModeAsync" Size="Size.Small" Outlined="false" CheckMark="false" Ripple="false"
+            Class="@(isDarkMode ? "theme-toggle theme-toggle-dark" : "theme-toggle")" SelectedClass="theme-toggle-selected">
+            <MudToggleItem Value="false">
+                <MudTooltip Text="@Loc["LightMode"]">
+                    <MudIcon Icon="@Icons.Material.Filled.LightMode" Size="Size.Small" />
+                </MudTooltip>
+            </MudToggleItem>
+            <MudToggleItem Value="true">
+                <MudTooltip Text="@Loc["DarkMode"]">
+                    <MudIcon Icon="@Icons.Material.Filled.DarkMode" Size="Size.Small" />
+                </MudTooltip>
+            </MudToggleItem>
+        </MudToggleGroup>
     </MudAppBar>
+    <MudDrawer @bind-Open="drawerOpen" Variant="DrawerVariant.Temporary" Elevation="2">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Mark2</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <MudNavLink Href="https://mark2.sfc.keio.ac.jp" Target="_blank" Icon="@Icons.Material.Filled.Info">
+                @Loc["AboutMark2"]
+            </MudNavLink>
+            <MudNavLink Href="https://github.com/mark2-omr/Mark2" Target="_blank"
+                Icon="@Icons.Custom.Brands.GitHub">
+                @Loc["GitHubRepository"]
+            </MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.Large">
             @Body
         </MudContainer>
     </MudMainContent>
 </MudLayout>
+
+@code {
+    private MudThemeProvider? themeProvider;
+    private bool drawerOpen;
+    private bool isDarkMode;
+    private bool isSwitchingTheme;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && themeProvider != null)
+        {
+            var isSystemDarkMode = await themeProvider.GetSystemDarkModeAsync();
+            if (isSystemDarkMode != isDarkMode)
+            {
+                await SetDarkModeAsync(isSystemDarkMode);
+                StateHasChanged();
+            }
+        }
+        else if (isSwitchingTheme)
+        {
+            isSwitchingTheme = false;
+            await InvokeThemeTransitionsAsync("restoreThemeTransitions");
+        }
+    }
+
+    private void ToggleDrawer() => drawerOpen = !drawerOpen;
+
+    private async Task SetDarkModeAsync(bool value)
+    {
+        await InvokeThemeTransitionsAsync("suppressThemeTransitions");
+        isDarkMode = value;
+        isSwitchingTheme = true;
+    }
+
+    private async Task InvokeThemeTransitionsAsync(string identifier)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync(identifier);
+        }
+        catch (JSException)
+        {
+            // Without suppressing CSS transitions, the theme still switches but fades unevenly.
+        }
+    }
+}

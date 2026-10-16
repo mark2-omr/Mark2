@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AboutMark2" xml:space="preserve">
+    <value>Mark2について</value>
+  </data>
   <data name="AdvancedSettings" xml:space="preserve">
     <value>詳細設定</value>
   </data>
@@ -126,11 +129,20 @@
   <data name="ColorThreshold" xml:space="preserve">
     <value>色閾値</value>
   </data>
+  <data name="DarkMode" xml:space="preserve">
+    <value>ダークモード</value>
+  </data>
   <data name="Download" xml:space="preserve">
     <value>ダウンロード</value>
   </data>
   <data name="ElapsedTime" xml:space="preserve">
     <value>処理時間</value>
+  </data>
+  <data name="GitHubRepository" xml:space="preserve">
+    <value>GitHubリポジトリ</value>
+  </data>
+  <data name="LightMode" xml:space="preserve">
+    <value>ライトモード</value>
   </data>
   <data name="LoadedImagesMessageSuffix" xml:space="preserve">
     <value>個の画像ファイルが読み込まれました。</value>
