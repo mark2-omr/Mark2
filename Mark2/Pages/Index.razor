@@ -332,14 +332,6 @@
         }, cts.Token);
 
         stopwatch.Stop();
-        var elapsedTime = Convert.ToDouble(stopwatch.ElapsedMilliseconds) / 1000.0;
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomLeft;
-        Snackbar.Configuration.SnackbarVariant = Variant.Outlined;
-        Snackbar.Add($"{Loc["ElapsedTime"]}: {elapsedTime} {Loc["Seconds"]}", Severity.Info, (options) =>
-        {
-            options.CloseAfterNavigation = true;
-            options.Icon = Icons.Material.Outlined.TaskAlt;
-        });
 
         // cts.Token.ThrowIfCancellationRequested();
     }
