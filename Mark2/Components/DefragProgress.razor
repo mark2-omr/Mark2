@@ -43,7 +43,8 @@
         _ => 6,
     };
 
-    private bool IsActive(int cell) => !IsCompleted && cell == Processed;
+    // Before recognition starts, every cell stays pending.
+    private bool IsActive(int cell) => Stopwatch?.IsRunning == true && cell == Processed;
 
     private string CellClass(int cell)
     {

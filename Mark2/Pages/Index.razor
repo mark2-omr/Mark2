@@ -116,7 +116,7 @@
     </MudCardActions>
 </MudCard>
 
-@if (stopwatch.IsRunning || isCompleted)
+@if (hasImages || stopwatch.IsRunning || isCompleted)
 {
     <MudCard Style="margin-top: 2em;">
         <MudCardContent>
@@ -247,6 +247,9 @@
 
     private void LoadImageFiles(InputFileChangeEventArgs e)
     {
+        // Show the newly loaded images as pending in the progress map.
+        processed = 0;
+        isCompleted = false;
         imageFiles = new List<IBrowserFile>();
         foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
         {
