@@ -15,7 +15,7 @@
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
             OnClick="ToggleDrawer" />
-        <MudText Typo="Typo.h5" Class="mt-1">Mark2</MudText>
+        <MudText Typo="Typo.h5" Class="mt-1 app-title">Mark2</MudText>
         <MudSpacer />
         <MudToggleGroup T="bool" Value="isDarkMode" ValueChanged="SetDarkModeAsync" Size="Size.Small" Outlined="false" CheckMark="false" Ripple="false"
             Class="@(isDarkMode ? "theme-toggle theme-toggle-dark" : "theme-toggle")" SelectedClass="theme-toggle-selected">

@@ -436,6 +436,13 @@ code {
         text-shadow: 0 0 3px rgba(127, 232, 255, 0.6);
     }
 
+.app-title {
+    font-family: 'Orbitron', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 500;
+    /* Orbitron's lowercase letters look crowded at the default spacing. */
+    letter-spacing: 0.1em;
+}
+
 .dark-mode .mud-appbar {
     /* Also used by the selected item of the theme toggle. */
     --mud-palette-appbar-background: #0a1630;
