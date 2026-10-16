@@ -1,0 +1,88 @@
+@using Microsoft.Extensions.Localization
+
+@inject IStringLocalizer<Mark2.Pages.Index> Loc
+
+<div class="@(IsCompleted ? "defrag defrag-completed" : "defrag")">
+    <div class="defrag-header">
+        <span class="defrag-status">@(IsCompleted ? Loc["DefragCompleted"] : Loc["DefragRecognizing"])</span>
+        <span class="defrag-counter">@Processed / @Total <span class="defrag-percent">@Percent%</span></span>
+    </div>
+    <div class="defrag-map">
+        @for (int i = 0; i < CellCount; i++)
+        {
+            <div class="@CellClass(i)" style="@CellStyle(i)"></div>
+        }
+    </div>
+    <div class="defrag-meter">
+        <div class="defrag-meter-fill" style="width: @(Percent)%;"></div>
+    </div>
+    <div class="defrag-legend">
+        <span><i class="defrag-swatch defrag-cell-pending-0"></i>@Loc["DefragPending"]</span>
+        <span><i class="defrag-swatch defrag-cell-active"></i>@Loc["DefragProcessing"]</span>
+        <span><i class="defrag-swatch defrag-cell-done"></i>@Loc["DefragDone"]</span>
+    </div>
+</div>
+
+@code {
+    private const int CellCount = 480;
+
+    [Parameter]
+    public int Total { get; set; }
+
+    [Parameter]
+    public int Processed { get; set; }
+
+    [Parameter]
+    public bool IsCompleted { get; set; }
+
+    private int Percent => Total > 0 ? Processed * 100 / Total : 0;
+
+    // Each cell covers the images in [Start(cell), End(cell)). When there are fewer images than cells,
+    // consecutive cells share one image.
+    private long Start(int cell) => (long)cell * Total / CellCount;
+
+    private long End(int cell) => Math.Max(Start(cell + 1), Start(cell) + 1);
+
+    private bool IsActive(int cell) => !IsCompleted && Processed >= Start(cell) && Processed < End(cell);
+
+    private string CellClass(int cell)
+    {
+        if (IsCompleted || Processed >= End(cell))
+        {
+            return "defrag-cell defrag-cell-done";
+        }
+        if (IsActive(cell))
+        {
+            return "defrag-cell defrag-cell-active";
+        }
+        // Mostly fragmented (red), with some free (white), contiguous (teal) and unmovable (green) blocks.
+        return (Noise(cell) % 8) switch
+        {
+            < 5 => "defrag-cell defrag-cell-pending-0",
+            < 6 => "defrag-cell defrag-cell-pending-1",
+            < 7 => "defrag-cell defrag-cell-pending-2",
+            _ => "defrag-cell defrag-cell-pending-3",
+        };
+    }
+
+    // Cells being processed flicker at random, like blocks being read and written. On completion,
+    // a highlight sweeps across the map.
+    private string? CellStyle(int cell) =>
+        IsCompleted ? $"animation-delay: {cell * 3}ms;" :
+        IsActive(cell) ? $"animation-delay: {Noise(cell) % 10 * -70}ms;" : null;
+
+    // A stable pseudo-random pattern, so pending cells look fragmented but do not change between renders.
+    // Cells come in short runs, as fragmented files do on a disk.
+    private static uint Noise(int cell) => Hash((uint)(cell / (1 + Hash((uint)cell / 4) % 3)));
+
+    // The finalizer of MurmurHash3.
+    private static uint Hash(uint x)
+    {
+        x ^= x >> 16;
+        x *= 0x85ebca6b;
+        x ^= x >> 13;
+        x *= 0xc2b2ae35;
+        x ^= x >> 16;
+        return x;
+    }
+}

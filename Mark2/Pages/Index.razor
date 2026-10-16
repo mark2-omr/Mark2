@@ -120,19 +120,15 @@
 {
     <MudCard Style="margin-top: 2em;">
         <MudCardContent>
-            <MudProgressLinear Color="Color.Primary" Min=0 Max=@imageFiles.Count Value="@processed" />
+            <DefragProgress Total="@imageFiles.Count" Processed="@processed" IsCompleted="@isCompleted" />
         </MudCardContent>
-        <MudCardActions Class="d-flex align-center justify-center" Style="padding-bottom: 1em;">
-            @if (stopwatch.IsRunning)
-            {
-                <MudFab HtmlTag="label" Color="Color.Primary" Label="@progressMessage" Disabled=true />
-            }
-            else if (isCompleted)
-            {
+        @if (isCompleted)
+        {
+            <MudCardActions Class="d-flex align-center justify-center" Style="padding-bottom: 1em;">
                 <MudFab HtmlTag="label" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Download"
                     Label="@Loc["Download"]" OnClick=DownloadFile />
-            }
-        </MudCardActions>
+            </MudCardActions>
+        }
     </MudCard>
 }
 
@@ -215,7 +211,6 @@
     private bool hasLayout = false;
     private string imagesMessage = "";
     private string layoutMessage = "";
-    private string progressMessage = "";
     private bool isCompleted = false;
     private int processed = 0;
     private CancellationTokenSource cts = new();
@@ -306,7 +301,6 @@
         }
 
         processed = 0;
-        progressMessage = $"{processed} / {imageFiles.Count}";
         survey.ImageFiles = imageFiles.OrderBy(x => x.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
         survey.AreaThreshold = areaThreshold / 100.0;
         survey.ColorThreshold = colorThreshold / 100.0;
@@ -330,7 +324,6 @@
                     await survey.Recognize(i, JSRuntime);
                 }
                 processed++;
-                progressMessage = $"{processed} / {imageFiles.Count}";
                 StateHasChanged();
                 await Task.Delay(1);
             }

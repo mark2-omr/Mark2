@@ -313,3 +313,157 @@ code {
 .theme-switching .theme-toggle .mud-toggle-item {
     transition: color 250ms, opacity 250ms !important;
 }
+
+/* Recognition progress shown like a disk defragmenter's cluster map. */
+.defrag {
+    --defrag-glow: #7fe8ff;
+    --defrag-cyan: #5fb6cd;
+    position: relative;
+    overflow: hidden;
+    padding: 1rem 1.25rem 1.1rem;
+    border: 1px solid rgba(127, 232, 255, 0.35);
+    border-radius: 6px;
+    color: var(--defrag-glow);
+    font-family: 'Orbitron', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background: radial-gradient(ellipse at 50% 0%, #0a2c66 0%, #03173d 55%, #010814 100%);
+    box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(95, 182, 205, 0.25);
+}
+
+    /* scanlines */
+    .defrag::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(to bottom, rgba(127, 232, 255, 0.04) 0, rgba(127, 232, 255, 0.04) 1px, transparent 1px, transparent 3px);
+        pointer-events: none;
+    }
+
+.defrag-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.15em;
+}
+
+.defrag-status {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--defrag-cyan);
+}
+
+.defrag:not(.defrag-completed) .defrag-status::after {
+    content: "_";
+    animation: defrag-blink 1s steps(1) infinite;
+}
+
+.defrag-counter {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 6px var(--defrag-glow), 0 0 16px var(--defrag-cyan);
+}
+
+.defrag-percent {
+    margin-left: 0.5rem;
+    color: var(--defrag-glow);
+}
+
+.defrag-map {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9px, 1fr));
+    gap: 2px;
+    padding: 4px;
+    border: 1px solid rgba(127, 232, 255, 0.2);
+    background-color: rgba(1, 8, 20, 0.7);
+}
+
+.defrag-cell {
+    aspect-ratio: 1 / 1.6;
+    border-radius: 1px;
+    transition: background-color 300ms, box-shadow 300ms;
+}
+
+.defrag-cell-pending-0 { background-color: #c8343f; }
+.defrag-cell-pending-1 { background-color: #d9e2ec; }
+.defrag-cell-pending-2 { background-color: #2b6f7f; }
+.defrag-cell-pending-3 { background-color: #3a9a5b; }
+
+.defrag-cell-done {
+    background-color: #2f7bff;
+    box-shadow: 0 0 4px rgba(47, 123, 255, 0.7);
+}
+
+.defrag-cell-active {
+    background-color: #ffe14d;
+    box-shadow: 0 0 6px #ffe14d;
+    animation: defrag-access 700ms steps(1) infinite;
+}
+
+.defrag-completed .defrag-cell-done {
+    animation: defrag-sweep 600ms ease-out both;
+}
+
+.defrag-meter {
+    height: 4px;
+    margin-top: 0.75rem;
+    background-color: rgba(95, 182, 205, 0.15);
+}
+
+.defrag-meter-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--defrag-cyan), var(--defrag-glow));
+    box-shadow: 0 0 8px var(--defrag-glow);
+    transition: width 300ms ease-out;
+}
+
+.defrag-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    margin-top: 0.75rem;
+    font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+    .defrag-legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+.defrag-swatch {
+    display: inline-block;
+    width: 9px;
+    height: 14px;
+    border-radius: 1px;
+}
+
+    .defrag-swatch.defrag-cell-active {
+        animation: none;
+    }
+
+@keyframes defrag-access {
+    0% { background-color: #ffe14d; box-shadow: 0 0 6px #ffe14d; }
+    33% { background-color: #4dff88; box-shadow: 0 0 6px #4dff88; }
+    66% { background-color: #ffffff; box-shadow: 0 0 8px #ffffff; }
+}
+
+@keyframes defrag-sweep {
+    0% { background-color: #ffffff; box-shadow: 0 0 10px var(--defrag-glow); }
+    100% { background-color: #2f7bff; box-shadow: 0 0 4px rgba(47, 123, 255, 0.7); }
+}
+
+@keyframes defrag-blink {
+    50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .defrag *, .defrag *::before, .defrag *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
