@@ -1,7 +1,3 @@
-@using Microsoft.Extensions.Localization
-
-@inject IStringLocalizer<Mark2.Pages.Index> Loc
-
 <div class="@(IsCompleted ? "defrag defrag-completed" : "defrag")">
     <div class="defrag-header">
         <span class="defrag-counter">@Processed / @Total <span class="defrag-percent">@Percent%</span></span>
@@ -14,11 +10,6 @@
     </div>
     <div class="defrag-meter">
         <div class="defrag-meter-fill" style="width: @(Percent)%;"></div>
-    </div>
-    <div class="defrag-legend">
-        <span><i class="defrag-swatch defrag-cell-pending-0"></i>@Loc["DefragPending"]</span>
-        <span><i class="defrag-swatch defrag-cell-active"></i>@Loc["DefragProcessing"]</span>
-        <span><i class="defrag-swatch defrag-cell-done"></i>@Loc["DefragDone"]</span>
     </div>
 </div>
 

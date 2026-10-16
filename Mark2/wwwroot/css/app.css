@@ -407,33 +407,6 @@ code {
     transition: width 300ms ease-out;
 }
 
-.defrag-legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem 1.25rem;
-    margin-top: 0.75rem;
-    font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-    .defrag-legend span {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-    }
-
-.defrag-swatch {
-    display: inline-block;
-    width: 9px;
-    height: 14px;
-    border-radius: 1px;
-}
-
-    .defrag-swatch.defrag-cell-active {
-        animation: none;
-    }
-
 @keyframes defrag-access {
     0% { background-color: #ffe14d; box-shadow: 0 0 6px #ffe14d; }
     33% { background-color: #4dff88; box-shadow: 0 0 6px #4dff88; }

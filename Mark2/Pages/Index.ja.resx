@@ -168,13 +168,4 @@
   <data name="StartRecognition" xml:space="preserve">
     <value>マーク認識を開始</value>
   </data>
-  <data name="DefragDone" xml:space="preserve">
-    <value>認識済み</value>
-  </data>
-  <data name="DefragPending" xml:space="preserve">
-    <value>未認識</value>
-  </data>
-  <data name="DefragProcessing" xml:space="preserve">
-    <value>認識中</value>
-  </data>
 </root>

@@ -168,13 +168,4 @@
   <data name="StartRecognition" xml:space="preserve">
     <value>Start Recognition</value>
   </data>
-  <data name="DefragDone" xml:space="preserve">
-    <value>Recognized</value>
-  </data>
-  <data name="DefragPending" xml:space="preserve">
-    <value>Not recognized yet</value>
-  </data>
-  <data name="DefragProcessing" xml:space="preserve">
-    <value>Recognizing</value>
-  </data>
 </root>
