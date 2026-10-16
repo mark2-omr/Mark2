@@ -4,11 +4,11 @@
 
 <div class="defrag">
     <div class="defrag-header">
-        <span class="defrag-counter">@Processed / @Total <span class="defrag-percent">@Percent%</span></span>
         @if (IsCompleted && Stopwatch?.IsRunning == false)
         {
             <span class="defrag-counter">@Stopwatch.Elapsed.TotalSeconds.ToString("F3") @Loc["Seconds"]</span>
         }
+        <span class="defrag-counter defrag-progress">@Percent% (@Processed/@Total)</span>
     </div>
     <div class="defrag-map" style="--defrag-cell-size: @(CellSize)px;">
         @for (int i = 0; i < Total; i++)

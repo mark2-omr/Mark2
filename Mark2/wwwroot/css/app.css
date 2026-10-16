@@ -325,7 +325,6 @@ code {
 .defrag {
     --defrag-text: var(--mud-palette-text-primary);
     --defrag-text-shadow: none;
-    --defrag-accent: var(--mud-palette-primary);
     --defrag-pending: #eceef1;
     --defrag-pending-border: rgba(0, 0, 0, 0.1);
     --defrag-done: var(--mud-palette-primary);
@@ -337,7 +336,6 @@ code {
 .dark-mode .defrag {
     --defrag-text: #fff;
     --defrag-text-shadow: 0 0 6px #7fe8ff, 0 0 16px #5fb6cd;
-    --defrag-accent: #7fe8ff;
     --defrag-pending: rgba(95, 182, 205, 0.08);
     --defrag-pending-border: rgba(95, 182, 205, 0.22);
     --defrag-done: #7fe8ff;
@@ -361,9 +359,9 @@ code {
     font-variant-numeric: tabular-nums;
 }
 
-.defrag-percent {
-    margin-left: 0.5rem;
-    color: var(--defrag-accent);
+/* Keep the progress on the right, even before the elapsed time appears on the left. */
+.defrag-progress {
+    margin-left: auto;
 }
 
 .defrag-map {
