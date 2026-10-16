@@ -320,7 +320,7 @@ code {
     --defrag-cyan: #5fb6cd;
     position: relative;
     overflow: hidden;
-    padding: 1rem 1.25rem 1.1rem;
+    padding: 1rem 1.25rem 1.25rem;
     border: 1px solid rgba(127, 232, 255, 0.35);
     border-radius: 6px;
     color: var(--defrag-glow);
@@ -393,19 +393,6 @@ code {
 
 .defrag-completed .defrag-cell-done {
     animation: defrag-sweep 600ms ease-out both;
-}
-
-.defrag-meter {
-    height: 4px;
-    margin-top: 0.75rem;
-    background-color: rgba(95, 182, 205, 0.15);
-}
-
-.defrag-meter-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--defrag-cyan), var(--defrag-glow));
-    box-shadow: 0 0 8px var(--defrag-glow);
-    transition: width 300ms ease-out;
 }
 
 @keyframes defrag-access {
