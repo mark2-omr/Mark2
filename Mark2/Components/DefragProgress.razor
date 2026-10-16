@@ -37,7 +37,6 @@
     // One cell represents one image, so the cells shrink as the number of images grows.
     private int CellSize => Total switch
     {
-        <= 100 => 22,
         <= 400 => 14,
         <= 1500 => 9,
         _ => 6,
