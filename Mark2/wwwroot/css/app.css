@@ -414,3 +414,33 @@ code {
         transition: none !important;
     }
 }
+
+/* Cards glow like neon tubes in dark mode. */
+.dark-mode .mud-card {
+    --neon-glow: #7fe8ff;
+    --neon-cyan: #5fb6cd;
+    border: 1px solid var(--neon-glow);
+    box-shadow:
+        0 0 4px var(--neon-glow),
+        0 0 14px rgba(95, 182, 205, 0.55),
+        0 0 32px rgba(95, 182, 205, 0.25),
+        inset 0 0 10px rgba(127, 232, 255, 0.18);
+    animation: neon-flicker 1.2s linear 1 both;
+}
+
+    .dark-mode .mud-card .mud-card-header .mud-typography {
+        color: #fff;
+        text-shadow: 0 0 4px var(--neon-glow), 0 0 12px var(--neon-cyan);
+    }
+
+/* Flickers on like a neon sign when a card appears. */
+@keyframes neon-flicker {
+    0%, 12%, 20%, 34% { opacity: 0.35; }
+    10%, 16%, 30%, 100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dark-mode .mud-card {
+        animation: none;
+    }
+}
