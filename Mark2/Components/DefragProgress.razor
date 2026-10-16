@@ -1,6 +1,13 @@
+@using Microsoft.Extensions.Localization
+
+@implements IDisposable
+
+@inject IStringLocalizer<Mark2.Pages.Index> Loc
+
 <div class="@(IsCompleted ? "defrag defrag-completed" : "defrag")">
     <div class="defrag-header">
         <span class="defrag-counter">@Processed / @Total <span class="defrag-percent">@Percent%</span></span>
+        <span class="defrag-counter">@ElapsedSeconds.ToString("F1") @Loc["Seconds"]</span>
     </div>
     <div class="defrag-map" style="--defrag-cell-size: @(CellSize)px;">
         @for (int i = 0; i < Total; i++)
@@ -19,6 +26,15 @@
 
     [Parameter]
     public bool IsCompleted { get; set; }
+
+    // Read on every render, so the elapsed time keeps counting while recognition is running and stays at
+    // its final value once the stopwatch stops.
+    [Parameter]
+    public System.Diagnostics.Stopwatch? Stopwatch { get; set; }
+
+    private readonly CancellationTokenSource cts = new();
+
+    private double ElapsedSeconds => Stopwatch?.Elapsed.TotalSeconds ?? 0;
 
     private int Percent => Total > 0 ? Processed * 100 / Total : 0;
 
@@ -49,4 +65,31 @@
     // On completion, a highlight sweeps across the map in about 1.5 seconds regardless of the number of images.
     private string? CellStyle(int cell) =>
         IsCompleted ? $"animation-delay: {(long)cell * 1500 / Math.Max(Total, 1)}ms;" : null;
+
+    protected override void OnInitialized() => _ = TickAsync();
+
+    // Re-render periodically while the stopwatch is running, since the parent re-renders only once per image.
+    private async Task TickAsync()
+    {
+        using PeriodicTimer timer = new(TimeSpan.FromMilliseconds(100));
+        try
+        {
+            while (await timer.WaitForNextTickAsync(cts.Token))
+            {
+                if (Stopwatch?.IsRunning == true)
+                {
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    public void Dispose()
+    {
+        cts.Cancel();
+        cts.Dispose();
+    }
 }

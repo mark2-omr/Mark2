@@ -120,7 +120,7 @@
 {
     <MudCard Style="margin-top: 2em;">
         <MudCardContent>
-            <DefragProgress Total="@imageFiles.Count" Processed="@processed" IsCompleted="@isCompleted" />
+            <DefragProgress Total="@imageFiles.Count" Processed="@processed" IsCompleted="@isCompleted" Stopwatch="@stopwatch" />
         </MudCardContent>
         @if (isCompleted)
         {

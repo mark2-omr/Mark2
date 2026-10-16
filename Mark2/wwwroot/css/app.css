@@ -342,7 +342,8 @@ code {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    justify-content: flex-end;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
     margin-bottom: 0.75rem;
     letter-spacing: 0.15em;
 }
@@ -352,6 +353,7 @@ code {
     font-weight: 700;
     color: #fff;
     text-shadow: 0 0 6px var(--defrag-glow), 0 0 16px var(--defrag-cyan);
+    font-variant-numeric: tabular-nums;
 }
 
 .defrag-percent {
