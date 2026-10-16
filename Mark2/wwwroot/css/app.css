@@ -373,7 +373,7 @@ code {
 
 .defrag-map {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(9px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(var(--defrag-cell-size, 9px), 1fr));
     gap: 2px;
     padding: 4px;
     border: 1px solid rgba(127, 232, 255, 0.2);

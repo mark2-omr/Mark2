@@ -7,8 +7,8 @@
         <span class="defrag-status">@(IsCompleted ? Loc["DefragCompleted"] : Loc["DefragRecognizing"])</span>
         <span class="defrag-counter">@Processed / @Total <span class="defrag-percent">@Percent%</span></span>
     </div>
-    <div class="defrag-map">
-        @for (int i = 0; i < CellCount; i++)
+    <div class="defrag-map" style="--defrag-cell-size: @(CellSize)px;">
+        @for (int i = 0; i < Total; i++)
         {
             <div class="@CellClass(i)" style="@CellStyle(i)"></div>
         }
@@ -24,8 +24,6 @@
 </div>
 
 @code {
-    private const int CellCount = 480;
-
     [Parameter]
     public int Total { get; set; }
 
@@ -37,17 +35,20 @@
 
     private int Percent => Total > 0 ? Processed * 100 / Total : 0;
 
-    // Each cell covers the images in [Start(cell), End(cell)). When there are fewer images than cells,
-    // consecutive cells share one image.
-    private long Start(int cell) => (long)cell * Total / CellCount;
+    // One cell represents one image, so the cells shrink as the number of images grows.
+    private int CellSize => Total switch
+    {
+        <= 100 => 22,
+        <= 400 => 14,
+        <= 1500 => 9,
+        _ => 6,
+    };
 
-    private long End(int cell) => Math.Max(Start(cell + 1), Start(cell) + 1);
-
-    private bool IsActive(int cell) => !IsCompleted && Processed >= Start(cell) && Processed < End(cell);
+    private bool IsActive(int cell) => !IsCompleted && cell == Processed;
 
     private string CellClass(int cell)
     {
-        if (IsCompleted || Processed >= End(cell))
+        if (IsCompleted || cell < Processed)
         {
             return "defrag-cell defrag-cell-done";
         }
@@ -65,11 +66,9 @@
         };
     }
 
-    // Cells being processed flicker at random, like blocks being read and written. On completion,
-    // a highlight sweeps across the map.
+    // On completion, a highlight sweeps across the map in about 1.5 seconds regardless of the number of images.
     private string? CellStyle(int cell) =>
-        IsCompleted ? $"animation-delay: {cell * 3}ms;" :
-        IsActive(cell) ? $"animation-delay: {Noise(cell) % 10 * -70}ms;" : null;
+        IsCompleted ? $"animation-delay: {(long)cell * 1500 / Math.Max(Total, 1)}ms;" : null;
 
     // A stable pseudo-random pattern, so pending cells look fragmented but do not change between renders.
     // Cells come in short runs, as fragmented files do on a disk.
