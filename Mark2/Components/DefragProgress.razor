@@ -1,4 +1,3 @@
-@using System.Globalization
 @using Microsoft.Extensions.Localization
 
 @inject IStringLocalizer<Mark2.Pages.Index> Loc
@@ -6,40 +5,9 @@
 <div class="@(IsCompleted ? "defrag defrag-completed" : "defrag")">
     <div class="defrag-header">
         <span class="defrag-counter">@Processed / @Total <span class="defrag-percent">@Percent%</span></span>
-        @if (Stopwatch?.IsRunning == true)
+        @if (IsCompleted && Stopwatch?.IsRunning == false)
         {
-            @* Recognition blocks the main thread, so the elapsed time counts up with composited CSS animations
-               instead of re-rendering. *@
-            <span class="defrag-counter defrag-counter-running" @key="Stopwatch">
-                @for (int place = 3; place >= 1; place--)
-                {
-                    <span class="defrag-wheel"><span class="defrag-strip defrag-strip-lead" style="@WheelStyle(Math.Pow(10, place + 1))">
-                        <span>&nbsp;</span>
-                        @for (int digit = 1; digit < 20; digit++)
-                        {
-                            <span>@(digit % 10)</span>
-                        }
-                    </span></span>
-                }
-                @foreach (var period in new[] { 10, 1 })
-                {
-                    @if (period == 1)
-                    {
-                        @(".")
-                    }
-                    <span class="defrag-wheel"><span class="defrag-strip" style="@WheelStyle(period)">
-                        @for (int digit = 0; digit < 10; digit++)
-                        {
-                            <span>@digit</span>
-                        }
-                    </span></span>
-                }
-                @($" {Loc["Seconds"]}")
-            </span>
-        }
-        else
-        {
-            <span class="defrag-counter">@ElapsedSeconds.ToString("F1") @Loc["Seconds"]</span>
+            <span class="defrag-counter">@Stopwatch.Elapsed.TotalSeconds.ToString("F1") @Loc["Seconds"]</span>
         }
     </div>
     <div class="defrag-map" style="--defrag-cell-size: @(CellSize)px;">
@@ -60,14 +28,9 @@
     [Parameter]
     public bool IsCompleted { get; set; }
 
+    // Its elapsed time is shown once recognition completes.
     [Parameter]
     public System.Diagnostics.Stopwatch? Stopwatch { get; set; }
-
-    // The elapsed time when the counting animations of the current stopwatch were created.
-    private System.Diagnostics.Stopwatch? startedStopwatch;
-    private double startOffset;
-
-    private double ElapsedSeconds => Stopwatch?.Elapsed.TotalSeconds ?? 0;
 
     private int Percent => Total > 0 ? Processed * 100 / Total : 0;
 
@@ -98,18 +61,4 @@
     // On completion, a highlight sweeps across the map in about 1.5 seconds regardless of the number of images.
     private string? CellStyle(int cell) =>
         IsCompleted ? $"animation-delay: {(long)cell * 1500 / Math.Max(Total, 1)}ms;" : null;
-
-    protected override void OnParametersSet()
-    {
-        if (Stopwatch != startedStopwatch)
-        {
-            startedStopwatch = Stopwatch;
-            startOffset = ElapsedSeconds;
-        }
-    }
-
-    // A wheel shows one digit and makes a full turn in the given period (seconds). The offset is fixed per
-    // stopwatch, since changing the animation delay of a running animation would shift it.
-    private string WheelStyle(double period) => string.Create(CultureInfo.InvariantCulture,
-        $"--defrag-period: {period}s; --defrag-offset: {startOffset:F3}s;");
 }

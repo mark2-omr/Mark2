@@ -356,39 +356,6 @@ code {
     font-variant-numeric: tabular-nums;
 }
 
-/* The wheels clip text shadows, so the counting time glows with a filter instead. */
-.defrag-counter-running {
-    text-shadow: none;
-    filter: drop-shadow(0 0 3px var(--defrag-glow)) drop-shadow(0 0 8px var(--defrag-cyan));
-}
-
-/* The keyframes below move the strips by multiples of this height (1.3em). */
-.defrag-wheel {
-    display: inline-block;
-    height: 1.3em;
-    overflow: hidden;
-    vertical-align: bottom;
-}
-
-.defrag-strip {
-    display: flex;
-    flex-direction: column;
-    animation: defrag-wheel var(--defrag-period) steps(10) calc(-1 * var(--defrag-offset)) infinite;
-}
-
-    .defrag-strip > span {
-        height: 1.3em;
-        line-height: 1.3em;
-        text-align: center;
-    }
-
-/* Starts blank (no leading zero), then turns 0-9 once the higher wheels have passed zero. */
-.defrag-strip-lead {
-    animation:
-        defrag-wheel var(--defrag-period) steps(10) calc(-1 * var(--defrag-offset)) 1 forwards,
-        defrag-wheel-loop var(--defrag-period) steps(10) calc(var(--defrag-period) - var(--defrag-offset)) infinite;
-}
-
 .defrag-percent {
     margin-left: 0.5rem;
     color: var(--defrag-glow);
@@ -436,24 +403,13 @@ code {
     66% { background-color: #ffffff; box-shadow: 0 0 8px #ffffff; }
 }
 
-@keyframes defrag-wheel {
-    from { transform: translateY(0); }
-    to { transform: translateY(-13em); }
-}
-
-@keyframes defrag-wheel-loop {
-    from { transform: translateY(-13em); }
-    to { transform: translateY(-26em); }
-}
-
 @keyframes defrag-sweep {
     0% { background-color: #ffffff; box-shadow: 0 0 8px #ffffff, 0 0 16px var(--defrag-glow); }
     100% { background-color: var(--defrag-glow); box-shadow: 0 0 4px var(--defrag-glow), 0 0 10px var(--defrag-cyan); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    /* The elapsed time keeps counting. */
-    .defrag *:not(.defrag-strip), .defrag *::before, .defrag *::after {
+    .defrag *, .defrag *::before, .defrag *::after {
         animation: none !important;
         transition: none !important;
     }
