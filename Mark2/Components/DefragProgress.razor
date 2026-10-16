@@ -1,13 +1,46 @@
+@using System.Globalization
 @using Microsoft.Extensions.Localization
-
-@implements IDisposable
 
 @inject IStringLocalizer<Mark2.Pages.Index> Loc
 
 <div class="@(IsCompleted ? "defrag defrag-completed" : "defrag")">
     <div class="defrag-header">
         <span class="defrag-counter">@Processed / @Total <span class="defrag-percent">@Percent%</span></span>
-        <span class="defrag-counter">@ElapsedSeconds.ToString("F1") @Loc["Seconds"]</span>
+        @if (Stopwatch?.IsRunning == true)
+        {
+            @* Recognition blocks the main thread, so the elapsed time counts up with composited CSS animations
+               instead of re-rendering. *@
+            <span class="defrag-counter defrag-counter-running" @key="Stopwatch">
+                @for (int place = 3; place >= 1; place--)
+                {
+                    <span class="defrag-wheel"><span class="defrag-strip defrag-strip-lead" style="@WheelStyle(Math.Pow(10, place + 1))">
+                        <span>&nbsp;</span>
+                        @for (int digit = 1; digit < 20; digit++)
+                        {
+                            <span>@(digit % 10)</span>
+                        }
+                    </span></span>
+                }
+                @foreach (var period in new[] { 10, 1 })
+                {
+                    @if (period == 1)
+                    {
+                        @(".")
+                    }
+                    <span class="defrag-wheel"><span class="defrag-strip" style="@WheelStyle(period)">
+                        @for (int digit = 0; digit < 10; digit++)
+                        {
+                            <span>@digit</span>
+                        }
+                    </span></span>
+                }
+                @($" {Loc["Seconds"]}")
+            </span>
+        }
+        else
+        {
+            <span class="defrag-counter">@ElapsedSeconds.ToString("F1") @Loc["Seconds"]</span>
+        }
     </div>
     <div class="defrag-map" style="--defrag-cell-size: @(CellSize)px;">
         @for (int i = 0; i < Total; i++)
@@ -27,12 +60,12 @@
     [Parameter]
     public bool IsCompleted { get; set; }
 
-    // Read on every render, so the elapsed time keeps counting while recognition is running and stays at
-    // its final value once the stopwatch stops.
     [Parameter]
     public System.Diagnostics.Stopwatch? Stopwatch { get; set; }
 
-    private readonly CancellationTokenSource cts = new();
+    // The elapsed time when the counting animations of the current stopwatch were created.
+    private System.Diagnostics.Stopwatch? startedStopwatch;
+    private double startOffset;
 
     private double ElapsedSeconds => Stopwatch?.Elapsed.TotalSeconds ?? 0;
 
@@ -66,30 +99,17 @@
     private string? CellStyle(int cell) =>
         IsCompleted ? $"animation-delay: {(long)cell * 1500 / Math.Max(Total, 1)}ms;" : null;
 
-    protected override void OnInitialized() => _ = TickAsync();
-
-    // Re-render periodically while the stopwatch is running, since the parent re-renders only once per image.
-    private async Task TickAsync()
+    protected override void OnParametersSet()
     {
-        using PeriodicTimer timer = new(TimeSpan.FromMilliseconds(100));
-        try
+        if (Stopwatch != startedStopwatch)
         {
-            while (await timer.WaitForNextTickAsync(cts.Token))
-            {
-                if (Stopwatch?.IsRunning == true)
-                {
-                    StateHasChanged();
-                }
-            }
-        }
-        catch (OperationCanceledException)
-        {
+            startedStopwatch = Stopwatch;
+            startOffset = ElapsedSeconds;
         }
     }
 
-    public void Dispose()
-    {
-        cts.Cancel();
-        cts.Dispose();
-    }
+    // A wheel shows one digit and makes a full turn in the given period (seconds). The offset is fixed per
+    // stopwatch, since changing the animation delay of a running animation would shift it.
+    private string WheelStyle(double period) => string.Create(CultureInfo.InvariantCulture,
+        $"--defrag-period: {period}s; --defrag-offset: {startOffset:F3}s;");
 }
