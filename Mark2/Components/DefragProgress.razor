@@ -46,32 +46,10 @@
         {
             return "defrag-cell defrag-cell-active";
         }
-        // Mostly fragmented (red), with some free (white), contiguous (teal) and unmovable (green) blocks.
-        return (Noise(cell) % 8) switch
-        {
-            < 5 => "defrag-cell defrag-cell-pending-0",
-            < 6 => "defrag-cell defrag-cell-pending-1",
-            < 7 => "defrag-cell defrag-cell-pending-2",
-            _ => "defrag-cell defrag-cell-pending-3",
-        };
+        return "defrag-cell defrag-cell-pending";
     }
 
     // On completion, a highlight sweeps across the map in about 1.5 seconds regardless of the number of images.
     private string? CellStyle(int cell) =>
         IsCompleted ? $"animation-delay: {(long)cell * 1500 / Math.Max(Total, 1)}ms;" : null;
-
-    // A stable pseudo-random pattern, so pending cells look fragmented but do not change between renders.
-    // Cells come in short runs, as fragmented files do on a disk.
-    private static uint Noise(int cell) => Hash((uint)(cell / (1 + Hash((uint)cell / 4) % 3)));
-
-    // The finalizer of MurmurHash3.
-    private static uint Hash(uint x)
-    {
-        x ^= x >> 16;
-        x *= 0x85ebca6b;
-        x ^= x >> 13;
-        x *= 0xc2b2ae35;
-        x ^= x >> 16;
-        return x;
-    }
 }
