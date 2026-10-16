@@ -314,19 +314,36 @@ code {
     transition: color 250ms, opacity 250ms !important;
 }
 
-/* Recognition progress shown like a disk defragmenter's cluster map. */
+/* Recognition progress shown like a disk defragmenter's cluster map. Light mode by default. */
 .defrag {
-    --defrag-glow: #7fe8ff;
-    --defrag-cyan: #5fb6cd;
+    --defrag-panel-background: #f6f8fb;
+    --defrag-panel-border: rgba(0, 0, 0, 0.08);
+    --defrag-panel-shadow: none;
+    --defrag-scanline: transparent;
+    --defrag-text: var(--mud-palette-text-primary);
+    --defrag-text-shadow: none;
+    --defrag-accent: var(--mud-palette-primary);
+    --defrag-map-background: #e8ecf1;
+    --defrag-map-border: rgba(0, 0, 0, 0.06);
+    --defrag-pending: #ffffff;
+    --defrag-pending-border: rgba(0, 0, 0, 0.12);
+    --defrag-done: var(--mud-palette-primary);
+    --defrag-done-shadow: none;
+    --defrag-sweep: var(--mud-palette-primary-lighten);
+    --defrag-sweep-shadow: 0 0 6px var(--mud-palette-primary-lighten);
+    --defrag-access-1: #ffb300;
+    --defrag-access-2: #43a047;
+    --defrag-access-3: #ff7043;
+    --defrag-access-glow: 0;
     position: relative;
     overflow: hidden;
     padding: 1rem 1.25rem 1.25rem;
-    border: 1px solid rgba(127, 232, 255, 0.35);
+    border: 1px solid var(--defrag-panel-border);
     border-radius: 6px;
-    color: var(--defrag-glow);
+    color: var(--defrag-text);
     font-family: 'Orbitron', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    background: radial-gradient(ellipse at 50% 0%, #0a2c66 0%, #03173d 55%, #010814 100%);
-    box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(95, 182, 205, 0.25);
+    background: var(--defrag-panel-background);
+    box-shadow: var(--defrag-panel-shadow);
 }
 
     /* scanlines */
@@ -334,9 +351,31 @@ code {
         content: "";
         position: absolute;
         inset: 0;
-        background: repeating-linear-gradient(to bottom, rgba(127, 232, 255, 0.04) 0, rgba(127, 232, 255, 0.04) 1px, transparent 1px, transparent 3px);
+        background: repeating-linear-gradient(to bottom, var(--defrag-scanline) 0, var(--defrag-scanline) 1px, transparent 1px, transparent 3px);
         pointer-events: none;
     }
+
+.dark-mode .defrag {
+    --defrag-panel-background: radial-gradient(ellipse at 50% 0%, #0a2c66 0%, #03173d 55%, #010814 100%);
+    --defrag-panel-border: rgba(127, 232, 255, 0.35);
+    --defrag-panel-shadow: inset 0 0 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(95, 182, 205, 0.25);
+    --defrag-scanline: rgba(127, 232, 255, 0.04);
+    --defrag-text: #fff;
+    --defrag-text-shadow: 0 0 6px #7fe8ff, 0 0 16px #5fb6cd;
+    --defrag-accent: #7fe8ff;
+    --defrag-map-background: rgba(1, 8, 20, 0.7);
+    --defrag-map-border: rgba(127, 232, 255, 0.2);
+    --defrag-pending: rgba(95, 182, 205, 0.08);
+    --defrag-pending-border: rgba(95, 182, 205, 0.22);
+    --defrag-done: #7fe8ff;
+    --defrag-done-shadow: 0 0 4px #7fe8ff, 0 0 10px #5fb6cd;
+    --defrag-sweep: #ffffff;
+    --defrag-sweep-shadow: 0 0 8px #ffffff, 0 0 16px #7fe8ff;
+    --defrag-access-1: #ffe14d;
+    --defrag-access-2: #4dff88;
+    --defrag-access-3: #ffffff;
+    --defrag-access-glow: 6px;
+}
 
 .defrag-header {
     display: flex;
@@ -351,14 +390,13 @@ code {
 .defrag-counter {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #fff;
-    text-shadow: 0 0 6px var(--defrag-glow), 0 0 16px var(--defrag-cyan);
+    text-shadow: var(--defrag-text-shadow);
     font-variant-numeric: tabular-nums;
 }
 
 .defrag-percent {
     margin-left: 0.5rem;
-    color: var(--defrag-glow);
+    color: var(--defrag-accent);
 }
 
 .defrag-map {
@@ -366,8 +404,8 @@ code {
     grid-template-columns: repeat(auto-fill, minmax(var(--defrag-cell-size, 9px), 1fr));
     gap: 2px;
     padding: 4px;
-    border: 1px solid rgba(127, 232, 255, 0.2);
-    background-color: rgba(1, 8, 20, 0.7);
+    border: 1px solid var(--defrag-map-border);
+    background-color: var(--defrag-map-background);
 }
 
 .defrag-cell {
@@ -377,19 +415,18 @@ code {
 }
 
 .defrag-cell-pending {
-    background-color: rgba(95, 182, 205, 0.08);
-    box-shadow: inset 0 0 0 1px rgba(95, 182, 205, 0.22);
+    background-color: var(--defrag-pending);
+    box-shadow: inset 0 0 0 1px var(--defrag-pending-border);
 }
 
-/* Glows like the counter text. */
+/* Matches the percentage: the primary color in light mode, glowing cyan in dark mode. */
 .defrag-cell-done {
-    background-color: var(--defrag-glow);
-    box-shadow: 0 0 4px var(--defrag-glow), 0 0 10px var(--defrag-cyan);
+    background-color: var(--defrag-done);
+    box-shadow: var(--defrag-done-shadow);
 }
 
 .defrag-cell-active {
-    background-color: #ffe14d;
-    box-shadow: 0 0 6px #ffe14d;
+    background-color: var(--defrag-access-1);
     animation: defrag-access 700ms steps(1) infinite;
 }
 
@@ -398,14 +435,14 @@ code {
 }
 
 @keyframes defrag-access {
-    0% { background-color: #ffe14d; box-shadow: 0 0 6px #ffe14d; }
-    33% { background-color: #4dff88; box-shadow: 0 0 6px #4dff88; }
-    66% { background-color: #ffffff; box-shadow: 0 0 8px #ffffff; }
+    0% { background-color: var(--defrag-access-1); box-shadow: 0 0 var(--defrag-access-glow) var(--defrag-access-1); }
+    33% { background-color: var(--defrag-access-2); box-shadow: 0 0 var(--defrag-access-glow) var(--defrag-access-2); }
+    66% { background-color: var(--defrag-access-3); box-shadow: 0 0 var(--defrag-access-glow) var(--defrag-access-3); }
 }
 
 @keyframes defrag-sweep {
-    0% { background-color: #ffffff; box-shadow: 0 0 8px #ffffff, 0 0 16px var(--defrag-glow); }
-    100% { background-color: var(--defrag-glow); box-shadow: 0 0 4px var(--defrag-glow), 0 0 10px var(--defrag-cyan); }
+    0% { background-color: var(--defrag-sweep); box-shadow: var(--defrag-sweep-shadow); }
+    100% { background-color: var(--defrag-done); box-shadow: var(--defrag-done-shadow); }
 }
 
 @media (prefers-reduced-motion: reduce) {
