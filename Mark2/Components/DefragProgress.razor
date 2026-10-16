@@ -4,7 +4,6 @@
 
 <div class="@(IsCompleted ? "defrag defrag-completed" : "defrag")">
     <div class="defrag-header">
-        <span class="defrag-status">@(IsCompleted ? Loc["DefragCompleted"] : Loc["DefragRecognizing"])</span>
         <span class="defrag-counter">@Processed / @Total <span class="defrag-percent">@Percent%</span></span>
     </div>
     <div class="defrag-map" style="--defrag-cell-size: @(CellSize)px;">

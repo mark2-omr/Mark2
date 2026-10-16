@@ -168,9 +168,6 @@
   <data name="StartRecognition" xml:space="preserve">
     <value>Start Recognition</value>
   </data>
-  <data name="DefragCompleted" xml:space="preserve">
-    <value>RECOGNITION COMPLETE</value>
-  </data>
   <data name="DefragDone" xml:space="preserve">
     <value>Recognized</value>
   </data>
@@ -179,8 +176,5 @@
   </data>
   <data name="DefragProcessing" xml:space="preserve">
     <value>Recognizing</value>
-  </data>
-  <data name="DefragRecognizing" xml:space="preserve">
-    <value>RECOGNIZING</value>
   </data>
 </root>

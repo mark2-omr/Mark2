@@ -342,21 +342,9 @@ code {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    justify-content: space-between;
-    gap: 0.25rem 1rem;
+    justify-content: flex-end;
     margin-bottom: 0.75rem;
     letter-spacing: 0.15em;
-}
-
-.defrag-status {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--defrag-cyan);
-}
-
-.defrag:not(.defrag-completed) .defrag-status::after {
-    content: "_";
-    animation: defrag-blink 1s steps(1) infinite;
 }
 
 .defrag-counter {
@@ -455,10 +443,6 @@ code {
 @keyframes defrag-sweep {
     0% { background-color: #ffffff; box-shadow: 0 0 10px var(--defrag-glow); }
     100% { background-color: #2f7bff; box-shadow: 0 0 4px rgba(47, 123, 255, 0.7); }
-}
-
-@keyframes defrag-blink {
-    50% { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
