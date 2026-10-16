@@ -2,7 +2,7 @@
 
 @inject IStringLocalizer<Mark2.Pages.Index> Loc
 
-<div class="@(IsCompleted ? "defrag defrag-completed" : "defrag")">
+<div class="defrag">
     <div class="defrag-header">
         <span class="defrag-counter">@Processed / @Total <span class="defrag-percent">@Percent%</span></span>
         @if (IsCompleted && Stopwatch?.IsRunning == false)
@@ -13,7 +13,7 @@
     <div class="defrag-map" style="--defrag-cell-size: @(CellSize)px;">
         @for (int i = 0; i < Total; i++)
         {
-            <div class="@CellClass(i)" style="@CellStyle(i)"></div>
+            <div class="@CellClass(i)"></div>
         }
     </div>
 </div>
@@ -57,8 +57,4 @@
         }
         return "defrag-cell defrag-cell-pending";
     }
-
-    // On completion, a highlight sweeps across the map in about 1.5 seconds regardless of the number of images.
-    private string? CellStyle(int cell) =>
-        IsCompleted ? $"animation-delay: {(long)cell * 1500 / Math.Max(Total, 1)}ms;" : null;
 }

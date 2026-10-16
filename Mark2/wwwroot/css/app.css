@@ -324,8 +324,6 @@ code {
     --defrag-pending-border: rgba(0, 0, 0, 0.12);
     --defrag-done: var(--mud-palette-primary);
     --defrag-done-shadow: none;
-    --defrag-sweep: var(--mud-palette-primary-lighten);
-    --defrag-sweep-shadow: 0 0 6px var(--mud-palette-primary-lighten);
     --defrag-access-1: #ffb300;
     --defrag-access-2: #43a047;
     --defrag-access-3: #ff7043;
@@ -342,8 +340,6 @@ code {
     --defrag-pending-border: rgba(95, 182, 205, 0.22);
     --defrag-done: #7fe8ff;
     --defrag-done-shadow: 0 0 4px #7fe8ff, 0 0 10px #5fb6cd;
-    --defrag-sweep: #ffffff;
-    --defrag-sweep-shadow: 0 0 8px #ffffff, 0 0 16px #7fe8ff;
     --defrag-access-1: #ffe14d;
     --defrag-access-2: #4dff88;
     --defrag-access-3: #ffffff;
@@ -400,19 +396,10 @@ code {
     animation: defrag-access 700ms steps(1) infinite;
 }
 
-.defrag-completed .defrag-cell-done {
-    animation: defrag-sweep 600ms ease-out both;
-}
-
 @keyframes defrag-access {
     0% { background-color: var(--defrag-access-1); box-shadow: 0 0 var(--defrag-access-glow) var(--defrag-access-1); }
     33% { background-color: var(--defrag-access-2); box-shadow: 0 0 var(--defrag-access-glow) var(--defrag-access-2); }
     66% { background-color: var(--defrag-access-3); box-shadow: 0 0 var(--defrag-access-glow) var(--defrag-access-3); }
-}
-
-@keyframes defrag-sweep {
-    0% { background-color: var(--defrag-sweep); box-shadow: var(--defrag-sweep-shadow); }
-    100% { background-color: var(--defrag-done); box-shadow: var(--defrag-done-shadow); }
 }
 
 @media (prefers-reduced-motion: reduce) {
