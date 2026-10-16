@@ -2,6 +2,12 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+/* Reserve the space of the scrollbar so that the layout does not shift when the page becomes scrollable,
+   e.g. when the results appear after recognition completes. */
+html {
+    scrollbar-gutter: stable;
+}
+
 h1:focus {
     outline: none;
 }
