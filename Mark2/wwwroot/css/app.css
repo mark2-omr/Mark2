@@ -314,17 +314,12 @@ code {
     transition: color 250ms, opacity 250ms !important;
 }
 
-/* Recognition progress shown like a disk defragmenter's cluster map. Light mode by default. */
+/* Recognition progress shown like a disk defragmenter's cluster map, on the background of the card.
+   Light mode by default. */
 .defrag {
-    --defrag-panel-background: #f6f8fb;
-    --defrag-panel-border: rgba(0, 0, 0, 0.08);
-    --defrag-panel-shadow: none;
-    --defrag-scanline: transparent;
     --defrag-text: var(--mud-palette-text-primary);
     --defrag-text-shadow: none;
     --defrag-accent: var(--mud-palette-primary);
-    --defrag-map-background: #e8ecf1;
-    --defrag-map-border: rgba(0, 0, 0, 0.06);
     --defrag-pending: #ffffff;
     --defrag-pending-border: rgba(0, 0, 0, 0.12);
     --defrag-done: var(--mud-palette-primary);
@@ -335,36 +330,14 @@ code {
     --defrag-access-2: #43a047;
     --defrag-access-3: #ff7043;
     --defrag-access-glow: 0;
-    position: relative;
-    overflow: hidden;
-    padding: 1rem 1.25rem 1.25rem;
-    border: 1px solid var(--defrag-panel-border);
-    border-radius: 6px;
     color: var(--defrag-text);
     font-family: 'Orbitron', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    background: var(--defrag-panel-background);
-    box-shadow: var(--defrag-panel-shadow);
 }
 
-    /* scanlines */
-    .defrag::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(to bottom, var(--defrag-scanline) 0, var(--defrag-scanline) 1px, transparent 1px, transparent 3px);
-        pointer-events: none;
-    }
-
 .dark-mode .defrag {
-    --defrag-panel-background: radial-gradient(ellipse at 50% 0%, #0a2c66 0%, #03173d 55%, #010814 100%);
-    --defrag-panel-border: rgba(127, 232, 255, 0.35);
-    --defrag-panel-shadow: inset 0 0 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(95, 182, 205, 0.25);
-    --defrag-scanline: rgba(127, 232, 255, 0.04);
     --defrag-text: #fff;
     --defrag-text-shadow: 0 0 6px #7fe8ff, 0 0 16px #5fb6cd;
     --defrag-accent: #7fe8ff;
-    --defrag-map-background: rgba(1, 8, 20, 0.7);
-    --defrag-map-border: rgba(127, 232, 255, 0.2);
     --defrag-pending: rgba(95, 182, 205, 0.08);
     --defrag-pending-border: rgba(95, 182, 205, 0.22);
     --defrag-done: #7fe8ff;
@@ -403,9 +376,6 @@ code {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(var(--defrag-cell-size, 9px), 1fr));
     gap: 2px;
-    padding: 4px;
-    border: 1px solid var(--defrag-map-border);
-    background-color: var(--defrag-map-background);
 }
 
 .defrag-cell {
