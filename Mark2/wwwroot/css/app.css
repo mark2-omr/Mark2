@@ -320,8 +320,8 @@ code {
     --defrag-text: var(--mud-palette-text-primary);
     --defrag-text-shadow: none;
     --defrag-accent: var(--mud-palette-primary);
-    --defrag-pending: #ffffff;
-    --defrag-pending-border: rgba(0, 0, 0, 0.12);
+    --defrag-pending: #eceef1;
+    --defrag-pending-border: transparent;
     --defrag-done: var(--mud-palette-primary);
     --defrag-done-shadow: none;
     --defrag-access-1: #ffb300;
