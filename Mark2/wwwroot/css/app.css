@@ -321,7 +321,7 @@ code {
     --defrag-text-shadow: none;
     --defrag-accent: var(--mud-palette-primary);
     --defrag-pending: #eceef1;
-    --defrag-pending-border: transparent;
+    --defrag-pending-border: rgba(0, 0, 0, 0.1);
     --defrag-done: var(--mud-palette-primary);
     --defrag-done-shadow: none;
     --defrag-access-1: #ffb300;
