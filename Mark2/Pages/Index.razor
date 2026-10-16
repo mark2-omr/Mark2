@@ -63,7 +63,7 @@
                         </MudButton>
                     }
                 </MudItem>
-                <MudItem xs="6" md="8">
+                <MudItem xs="6" md="8" Class="d-flex align-center">
                     <MudText>@layoutMessage</MudText>
                 </MudItem>
             }
@@ -85,7 +85,7 @@
                     </MudButton>
                 }
             </MudItem>
-            <MudItem xs="6" md="8">
+            <MudItem xs="6" md="8" Class="d-flex align-center">
                 <MudText>@imagesMessage</MudText>
             </MudItem>
             <MudItem xs="12">
@@ -116,23 +116,19 @@
     </MudCardActions>
 </MudCard>
 
-@if (stopwatch.IsRunning || isCompleted)
+@if (hasImages || stopwatch.IsRunning || isCompleted)
 {
     <MudCard Style="margin-top: 2em;">
         <MudCardContent>
-            <MudProgressLinear Color="Color.Primary" Min=0 Max=@imageFiles.Count Value="@processed" />
+            <DefragProgress Total="@imageFiles.Count" Processed="@processed" IsCompleted="@isCompleted" Stopwatch="@stopwatch" />
         </MudCardContent>
-        <MudCardActions Class="d-flex align-center justify-center" Style="padding-bottom: 1em;">
-            @if (stopwatch.IsRunning)
-            {
-                <MudFab HtmlTag="label" Color="Color.Primary" Label="@progressMessage" Disabled=true />
-            }
-            else if (isCompleted)
-            {
+        @if (isCompleted)
+        {
+            <MudCardActions Class="d-flex align-center justify-center" Style="padding-bottom: 1em;">
                 <MudFab HtmlTag="label" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Download"
                     Label="@Loc["Download"]" OnClick=DownloadFile />
-            }
-        </MudCardActions>
+            </MudCardActions>
+        }
     </MudCard>
 }
 
@@ -215,7 +211,6 @@
     private bool hasLayout = false;
     private string imagesMessage = "";
     private string layoutMessage = "";
-    private string progressMessage = "";
     private bool isCompleted = false;
     private int processed = 0;
     private CancellationTokenSource cts = new();
@@ -252,6 +247,9 @@
 
     private void LoadImageFiles(InputFileChangeEventArgs e)
     {
+        // Show the newly loaded images as pending in the progress map.
+        processed = 0;
+        isCompleted = false;
         imageFiles = new List<IBrowserFile>();
         foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
         {
@@ -306,7 +304,6 @@
         }
 
         processed = 0;
-        progressMessage = $"{processed} / {imageFiles.Count}";
         survey.ImageFiles = imageFiles.OrderBy(x => x.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
         survey.AreaThreshold = areaThreshold / 100.0;
         survey.ColorThreshold = colorThreshold / 100.0;
@@ -330,7 +327,6 @@
                     await survey.Recognize(i, JSRuntime);
                 }
                 processed++;
-                progressMessage = $"{processed} / {imageFiles.Count}";
                 StateHasChanged();
                 await Task.Delay(1);
             }
@@ -339,14 +335,6 @@
         }, cts.Token);
 
         stopwatch.Stop();
-        var elapsedTime = Convert.ToDouble(stopwatch.ElapsedMilliseconds) / 1000.0;
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomLeft;
-        Snackbar.Configuration.SnackbarVariant = Variant.Outlined;
-        Snackbar.Add($"{Loc["ElapsedTime"]}: {elapsedTime} {Loc["Seconds"]}", Severity.Info, (options) =>
-        {
-            options.CloseAfterNavigation = true;
-            options.Icon = Icons.Material.Outlined.TaskAlt;
-        });
 
         // cts.Token.ThrowIfCancellationRequested();
     }

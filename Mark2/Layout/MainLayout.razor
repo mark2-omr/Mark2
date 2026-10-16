@@ -7,11 +7,11 @@
 @inject IJSRuntime JSRuntime
 @inject IStringLocalizer<Mark2.Pages.Index> Loc
 
-<MudThemeProvider @ref="themeProvider" @bind-IsDarkMode="isDarkMode" />
+<MudThemeProvider @ref="themeProvider" Theme="theme" @bind-IsDarkMode="isDarkMode" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
-<MudLayout>
+<MudLayout Class="@(isDarkMode ? "dark-mode" : null)">
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
             OnClick="ToggleDrawer" />
@@ -54,6 +54,11 @@
 
 @code {
     private MudThemeProvider? themeProvider;
+    // A light gray background in light mode, so that the white cards stand out.
+    private readonly MudTheme theme = new()
+    {
+        PaletteLight = new PaletteLight { Background = "#eef0f3" },
+    };
     private bool drawerOpen;
     private bool isDarkMode;
     private bool isSwitchingTheme;

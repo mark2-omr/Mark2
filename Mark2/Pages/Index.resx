@@ -135,9 +135,6 @@
   <data name="Download" xml:space="preserve">
     <value>Download</value>
   </data>
-  <data name="ElapsedTime" xml:space="preserve">
-    <value>Elapsed Time</value>
-  </data>
   <data name="GitHubRepository" xml:space="preserve">
     <value>GitHub Repository</value>
   </data>
