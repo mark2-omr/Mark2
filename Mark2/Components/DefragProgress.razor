@@ -10,7 +10,7 @@
         }
         <span class="defrag-counter defrag-progress">@Percent% (@Processed/@Total)</span>
     </div>
-    <div class="defrag-map" style="--defrag-cell-size: @(CellSize)px;">
+    <div class="defrag-map" style="--defrag-cell-size: @(CellSize)px; --defrag-cell-height: @(CellHeight)px;">
         @for (int i = 0; i < Total; i++)
         {
             <div class="@CellClass(i)"></div>
@@ -37,10 +37,12 @@
     // One cell represents one image, so the cells shrink as the number of images grows.
     private int CellSize => Total switch
     {
-        <= 400 => 14,
         <= 1500 => 9,
         _ => 6,
     };
+
+    // The height is a whole number of pixels, so that every row is drawn with the same height.
+    private int CellHeight => (int)Math.Round(CellSize * 1.6);
 
     // Before recognition starts, every cell stays pending.
     private bool IsActive(int cell) => Stopwatch?.IsRunning == true && cell == Processed;
