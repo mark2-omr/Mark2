@@ -201,8 +201,8 @@ a, .btn-link {
     z-index: 1;
     font-size: 2.2rem;
     font-weight: 700;
-    letter-spacing: 0.6em;
-    margin-right: -0.6em;
+    letter-spacing: 0.45em;
+    margin-right: -0.45em;
     color: #fff;
     text-shadow: 0 0 6px var(--boot-glow), 0 0 20px var(--boot-cyan), 0 0 40px rgba(95, 182, 205, 0.6);
 }
