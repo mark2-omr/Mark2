@@ -1,15 +1,15 @@
-﻿namespace Mark2;
+﻿namespace Mark2Worker;
 
-using Microsoft.JSInterop;
+using System.Runtime.InteropServices.JavaScript;
+using System.Runtime.Versioning;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-public class Item
+[SupportedOSPlatform("browser")]
+public partial class Item
 {
-    public int Pid { get; set; }
-    public string Name { get; set; }
     public Image<Rgba32> Image { get; set; }
     public Image<Rgba32> LogImage { get; set; }
     public List<Square> Squares { get; set; }
@@ -17,7 +17,6 @@ public class Item
     public double ColorThreshold { get; set; }
     public double AreaThreshold { get; set; }
     public List<List<int>> Answers { get; set; }
-    private readonly IJSRuntime _js;
 
     // Always encode as RGB; otherwise the encoder inherits the source format (e.g. grayscale JPEG) and drops the overlay colors
     private static readonly PngEncoder LogImageEncoder = new()
@@ -26,16 +25,17 @@ public class Item
         BitDepth = PngBitDepth.Bit8
     };
 
-    public Item(int pid, Page page, double colorThreshold, double areaThreshold, string name,
-                Image<Rgba32> image, IJSRuntime js)
+    // Runs in the Web Worker, where the JS functions of the main thread are not available.
+    // runOnnxRuntime must be defined in the global scope of the worker to recognize digits.
+    [JSImport("globalThis.runOnnxRuntime")]
+    private static partial Task<int> RunOnnxRuntime(double[] data);
+
+    public Item(Page page, double colorThreshold, double areaThreshold, Image<Rgba32> image)
     {
-        Pid = pid;
         Page = page;
         ColorThreshold = colorThreshold;
         AreaThreshold = areaThreshold;
-        Name = name;
         Image = image;
-        _js = js;
 
         LogImage = image.Clone();
         Squares = [];
@@ -357,7 +357,7 @@ public class Item
 
                 try
                 {
-                    var ans = await _js.InvokeAsync<int>("runOnnxRuntime", data);
+                    var ans = await RunOnnxRuntime(Array.ConvertAll(data, d => (double)d));
                     _answers.Add(ans);
                 }
                 catch (Exception ex)

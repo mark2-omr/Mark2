@@ -21,7 +21,10 @@
     <PackageReference Include="MudBlazor" Version="9.11.0" />
     <PackageReference Include="NaturalSort.Extension" Version="4.4.1" />
     <PackageReference Include="PublishSPAforGitHubPages.Build" Version="3.0.3" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="4.1.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mark2Worker\Mark2Worker.csproj" />
   </ItemGroup>
 
   <ItemGroup>

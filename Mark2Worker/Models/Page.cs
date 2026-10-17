@@ -1,4 +1,4 @@
-﻿namespace Mark2;
+namespace Mark2Worker;
 
 using System.Collections.Generic;
 

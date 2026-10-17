@@ -126,6 +126,9 @@
   <data name="AreaThreshold" xml:space="preserve">
     <value>面積閾値</value>
   </data>
+  <data name="Auto" xml:space="preserve">
+    <value>自動</value>
+  </data>
   <data name="ColorThreshold" xml:space="preserve">
     <value>色閾値</value>
   </data>
@@ -158,6 +161,9 @@
   </data>
   <data name="MarkRecognition" xml:space="preserve">
     <value>マーク認識</value>
+  </data>
+  <data name="Parallelism" xml:space="preserve">
+    <value>並列数</value>
   </data>
   <data name="RepositoryLoadingError" xml:space="preserve">
     <value>座標データを読み込むことができません。URLを確認して、ページを再読み込みしてください。</value>
