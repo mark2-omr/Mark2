@@ -383,3 +383,27 @@ code {
     color: var(--neon-glow) !important;
     filter: drop-shadow(0 0 2px rgba(127, 232, 255, 0.5));
 }
+
+/* The progress bar lights up like a neon tube, with a brighter leading edge. */
+.dark-mode .mud-progress-linear.mud-progress-linear-color-primary::before {
+    background-color: rgba(127, 232, 255, 0.12);
+    opacity: 1;
+}
+
+.dark-mode .mud-progress-linear.mud-progress-linear-color-primary .mud-progress-linear-bars {
+    filter: drop-shadow(0 0 3px rgba(127, 232, 255, 0.7)) drop-shadow(0 0 8px rgba(95, 182, 205, 0.4));
+}
+
+.dark-mode .mud-progress-linear.mud-progress-linear-color-primary .mud-progress-linear-bar {
+    background: linear-gradient(90deg, #5fb6cd, var(--neon-glow));
+}
+
+    .dark-mode .mud-progress-linear.mud-progress-linear-color-primary .mud-progress-linear-bar::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 24px;
+        background: linear-gradient(90deg, transparent, #fff);
+    }
