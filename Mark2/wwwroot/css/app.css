@@ -367,11 +367,13 @@ code {
 .defrag-map {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(var(--defrag-cell-size, 9px), 1fr));
+    /* A fixed row height instead of an aspect ratio: the stretched columns have fractional widths,
+       and the heights derived from them were rounded to different pixels row by row. */
+    grid-auto-rows: var(--defrag-cell-height, 14px);
     gap: 2px;
 }
 
 .defrag-cell {
-    aspect-ratio: 1 / 1.6;
     border-radius: 1px;
     transition: background-color 300ms, box-shadow 300ms;
 }
