@@ -90,9 +90,8 @@ Measured in an 8 GB sbx sandbox (no swap, 10 CPUs): the default build was killed
 
 - Add user-facing strings to both `Mark2/Pages/Index.resx` and `Mark2/Pages/Index.ja.resx`, and use them through `IStringLocalizer` (`Loc["Key"]`).
 - Use ImageSharp 4 APIs (e.g. `Color.ParseHex(...).ToPixel<Rgba32>()`; `Rgba32.ParseHex` no longer exists). Encode debug log images as RGB PNG so overlays keep their color on grayscale scans.
-- ImageSharp 4 needs a Six Labors license key at build time: the `SixLaborsLicenseKey` environment variable (CI uses the `SIXLABORS_LICENSE_KEY` secret) or a local `sixlabors.lic` under `Mark2/` (the build searches the project directory recursively). Never commit the key or `sixlabors.lic`.
+- ImageSharp 4 needs a Six Labors license key at build time: the `SixLaborsLicenseKey` environment variable (CI uses the `SIXLABORS_LICENSE_KEY` secret) or a local `sixlabors.lic` at the repository root (`Directory.Build.props` passes it to every project as `SixLaborsLicenseFile`). Never commit the key or `sixlabors.lic`.
 - Only strings, primitives and `byte[]` cross the worker boundary. Pass models as JSON with the source-generated `WorkerJsonContext`, and keep image processing (ImageSharp) in `Mark2Worker`. JS functions of the main thread (e.g. `runOnnxRuntime`) are not available in the worker.
-- `Mark2Worker` also validates the ImageSharp license at build time; without `SixLaborsLicenseKey`, it uses `Mark2/sixlabors.lic`.
 - Keep the code style of the surrounding code (nullable enabled, implicit usings, collection expressions).
 
 ## Git and PRs

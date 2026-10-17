@@ -1,0 +1,8 @@
+<Project>
+
+  <!-- ImageSharp validates the license per project. Without SixLaborsLicenseKey, use the local license at the repository root. -->
+  <PropertyGroup Condition="'$(SixLaborsLicenseKey)' == '' and '$(SixLaborsLicenseFile)' == '' and Exists('$(MSBuildThisFileDirectory)sixlabors.lic')">
+    <SixLaborsLicenseFile>$(MSBuildThisFileDirectory)sixlabors.lic</SixLaborsLicenseFile>
+  </PropertyGroup>
+
+</Project>
