@@ -247,6 +247,8 @@
 
     private void LoadImageFiles(InputFileChangeEventArgs e)
     {
+        // A canceled file dialog also ends up here with no files. InputFile then discards the files
+        // selected before, so they can no longer be read and are cleared here as well.
         // Show the newly loaded images as pending in the progress map.
         processed = 0;
         isCompleted = false;
@@ -276,6 +278,13 @@
 
     private async Task LoadLayoutFile(InputFileChangeEventArgs e)
     {
+        // InputFile also raises OnChange with no files when the file dialog is canceled.
+        // The layout already loaded stays valid, so keep it and its message as they are.
+        if (e.FileCount == 0)
+        {
+            return;
+        }
+
         try
         {
             foreach (var file in e.GetMultipleFiles())
