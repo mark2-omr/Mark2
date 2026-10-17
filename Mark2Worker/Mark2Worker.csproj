@@ -7,11 +7,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <!-- ImageSharp validates the license per project. Without SixLaborsLicenseKey, use the local license of the app. -->
-  <PropertyGroup Condition="'$(SixLaborsLicenseKey)' == '' and '$(SixLaborsLicenseFile)' == '' and Exists('..\Mark2\sixlabors.lic')">
-    <SixLaborsLicenseFile>..\Mark2\sixlabors.lic</SixLaborsLicenseFile>
-  </PropertyGroup>
-
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>

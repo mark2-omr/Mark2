@@ -28,7 +28,7 @@ The dev server listens on http://localhost:5130 (https://localhost:7202 with the
 % dotnet publish Mark2 -c Release -p GHPages=true -p GHPagesBase=/
 ```
 
-ImageSharp 4 requires a Six Labors license key at build time. Set it in the `SixLaborsLicenseKey` environment variable, or put it in a local `Mark2/sixlabors.lic` file (ignored by git).
+ImageSharp 4 requires a Six Labors license key at build time. Set it in the `SixLaborsLicenseKey` environment variable, or put it in a local `sixlabors.lic` file at the repository root (ignored by git).
 
 ```sh
 % SixLaborsLicenseKey=... dotnet publish Mark2 -c Release -p GHPages=true -p GHPagesBase=/
