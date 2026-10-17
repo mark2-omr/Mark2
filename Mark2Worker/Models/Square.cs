@@ -1,4 +1,4 @@
-﻿namespace Mark2;
+namespace Mark2Worker;
 
 public class Square
 {

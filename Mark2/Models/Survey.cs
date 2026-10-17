@@ -2,16 +2,15 @@
 
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Packaging;
+using Mark2Worker;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.JSInterop;
 using NaturalSort.Extension;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Drawing = DocumentFormat.OpenXml.Drawing;
 using Spreadsheet = DocumentFormat.OpenXml.Spreadsheet;
@@ -200,50 +199,34 @@ public class Survey
 
     private static string StringCellValue(IXLCell cell) => CellValue(cell).ToString(CultureInfo.CurrentCulture);
 
-    public async Task Recognize(int index, IJSRuntime js, bool updateLogImage = false)
+    // The image is recognized in the Web Worker so that the UI thread stays responsive
+    public async Task Recognize(int index, WebWorkerPool workers, bool updateLogImage = false)
     {
-        bool imageLoaded = true;
         MemoryStream stream = new();
         await ImageFiles[index].OpenReadStream(1024 * 1024 * 24).CopyToAsync(stream);
-        var image = new Image<Rgba32>(595, 842);
+        var pageJson = JsonSerializer.Serialize(Pages[index % Pages.Count], WorkerJsonContext.Default.Page);
+
+        RecognitionResult result;
         try
         {
-            image = Image.Load<Rgba32>(stream.ToArray());
+            var resultJson = await workers.InvokeAsync<string>("Mark2Worker.WorkerMethods.Recognize",
+                [stream.ToArray(), pageJson, ColorThreshold, AreaThreshold, updateLogImage]);
+            result = JsonSerializer.Deserialize(resultJson, WorkerJsonContext.Default.RecognitionResult)!;
         }
-        catch
+        catch (InvalidOperationException ex)
         {
-            imageLoaded = false;
+            // The worker failed or timed out: treat the image as an error, like an image that fails to load
+            Console.WriteLine(ex.Message);
+            result = new()
+            {
+                Answers = Pages[index % Pages.Count].Questions.Select(_ => new List<int> { -999, -999 }).ToList()
+            };
         }
 
-        Item item = new(index, Pages[index % Pages.Count], ColorThreshold, AreaThreshold,
-                        ImageFiles[index].Name, image, js);
-        if (imageLoaded)
+        Answers[ImageFiles[index].Name] = result.Answers;
+        if (updateLogImage)
         {
-            try
-            {
-                await item.Recognize();
-                Answers[item.Name] = item.Answers;
-                if (updateLogImage)
-                {
-                    SelectedLogImage = item.LogImageBase64();
-                }
-            }
-            catch
-            {
-                Answers[item.Name] = item.ErrorAnswers();
-                if (updateLogImage)
-                {
-                    SelectedLogImage = item.ErrorImageBase64();
-                }
-            }
-        }
-        else
-        {
-            Answers[item.Name] = item.ErrorAnswers();
-            if (updateLogImage)
-            {
-                SelectedLogImage = item.ErrorImageBase64();
-            }
+            SelectedLogImage = result.LogImage ?? string.Empty;
         }
     }
 

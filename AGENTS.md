@@ -6,6 +6,8 @@ Guidance for coding agents working in this repository.
 
 Mark2 is a mark recognition (OMR) web app. It is a Blazor WebAssembly app (`Mark2/Mark2.csproj`) that runs entirely in the browser and is deployed to GitHub Pages. Users load a layout (from a file or from `https://repository.mark2.org/<surveyId>.json`) and scanned images, run recognition, and download the results as a spreadsheet.
 
+Image recognition runs in a pool of Web Workers (`Mark2Worker/Mark2Worker.csproj`, from the `blazorwebworker` template), one less than the logical processors by default (Parallelism in the advanced settings), each starting its own .NET runtime off the UI thread. Images are recognized in parallel. This is experimental (branch `experiment/web-worker`).
+
 ## Tech stack
 
 - .NET 11 (RC2) / Blazor WebAssembly, AOT + SIMD in Release builds
@@ -22,12 +24,17 @@ The repository is managed by the `Mark2.slnx` solution at the root. Each project
 | --- | --- |
 | `Mark2.slnx` | Solution file (all projects) |
 | `Mark2/` | The Blazor WebAssembly app |
+| `Mark2Worker/` | Razor class library run in a Web Worker: image recognition (paths below are relative to the repository root) |
+| `Mark2Worker/WorkerMethods.cs` | `[JSExport]` entry points called from the app through `WebWorkerClient` |
+| `Mark2Worker/Models/Item.cs` | Per-image processing: square detection, interpolation, mark / digit recognition, log images |
+| `Mark2Worker/Models/*.cs` | Layout data model (`Page`, `Question`, `Area`, `Square`), `RecognitionResult`, and the JSON context for them |
+| `Mark2Worker/WebWorkerPool.cs` | Pool of workers that runs calls in parallel on idle workers |
+| `Mark2Worker/WebWorkerClient.cs`, `Mark2Worker/wwwroot/` | Worker startup and messaging (template code) |
 | `Program.cs` | Host setup (localization, MudBlazor services) |
 | `Pages/Index.razor` | The main (and only) page: UI and workflow |
 | `Pages/Index.resx`, `Pages/Index.ja.resx` | UI strings (English / Japanese) |
-| `Models/Survey.cs` | Layout loading, recognition across images, spreadsheet export |
-| `Models/Item.cs` | Per-image processing: square detection, interpolation, mark / digit recognition, log images |
-| `Models/*.cs` | Layout data model (`Page`, `Question`, `Area`, `Square`, `Repository`, ...) |
+| `Models/Survey.cs` | Layout loading, sending each image to the worker, spreadsheet export |
+| `Models/*.cs` | Repository data model (`Repository`, `RepositoryPayload`) |
 | `Layout/MainLayout.razor` | App layout |
 | `wwwroot/` | Static assets, `index.html` (startup loading screen), service worker, JS |
 | `.github/workflows/github-pages.yml` | Publish and deploy to GitHub Pages on push to `main` |
@@ -84,6 +91,8 @@ Measured in an 8 GB sbx sandbox (no swap, 10 CPUs): the default build was killed
 - Add user-facing strings to both `Mark2/Pages/Index.resx` and `Mark2/Pages/Index.ja.resx`, and use them through `IStringLocalizer` (`Loc["Key"]`).
 - Use ImageSharp 4 APIs (e.g. `Color.ParseHex(...).ToPixel<Rgba32>()`; `Rgba32.ParseHex` no longer exists). Encode debug log images as RGB PNG so overlays keep their color on grayscale scans.
 - ImageSharp 4 needs a Six Labors license key at build time: the `SixLaborsLicenseKey` environment variable (CI uses the `SIXLABORS_LICENSE_KEY` secret) or a local `sixlabors.lic` under `Mark2/` (the build searches the project directory recursively). Never commit the key or `sixlabors.lic`.
+- Only strings, primitives and `byte[]` cross the worker boundary. Pass models as JSON with the source-generated `WorkerJsonContext`, and keep image processing (ImageSharp) in `Mark2Worker`. JS functions of the main thread (e.g. `runOnnxRuntime`) are not available in the worker.
+- `Mark2Worker` also validates the ImageSharp license at build time; without `SixLaborsLicenseKey`, it uses `Mark2/sixlabors.lic`.
 - Keep the code style of the surrounding code (nullable enabled, implicit usings, collection expressions).
 
 ## Git and PRs

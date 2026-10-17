@@ -1,6 +1,9 @@
 ﻿@page "/"
 
+@using Mark2Worker
 @using Microsoft.Extensions.Localization
+
+@implements IAsyncDisposable
 
 @inject IJSRuntime JSRuntime
 @inject ISnackbar Snackbar
@@ -97,6 +100,16 @@
                         <MudSlider @bind-Value="colorThreshold" Max=95 Min=5 Color="Color.Tertiary">
                             @Loc["ColorThreshold"]: @colorThreshold.ToString()
                         </MudSlider>
+                        <MudSelect @bind-Value="parallelism" T="int" Label="@Loc["Parallelism"]" Variant="Variant.Outlined"
+                            ToStringFunc="ParallelismText" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft"
+                            Style="margin-top: 1em;">
+                            <MudSelectItem T="int" Value="0">@ParallelismText(0)</MudSelectItem>
+                            @for (int n = 1; n <= hardwareConcurrency; n++)
+                            {
+                                var count = n;
+                                <MudSelectItem T="int" Value="count">@ParallelismText(count)</MudSelectItem>
+                            }
+                        </MudSelect>
                     </MudExpansionPanel>
                 </MudExpansionPanels>
             </MudItem>
@@ -224,8 +237,32 @@
     private int logIndex = 0;
     private bool isLoadingLogImage = false;
 
+    // Recognizes the images in parallel off the UI thread. Created on the first recognition, since
+    // starting another .NET runtime in each worker takes time and memory.
+    private WebWorkerPool? workers;
+
+    // The number of workers to run in parallel; 0 means auto (one less than the logical processors,
+    // so that one is left for the UI thread)
+    private int parallelism = 0;
+    private int hardwareConcurrency = 1;
+
+    private int AutoParallelism => Math.Max(1, hardwareConcurrency - 1);
+
+    private int WorkerCount => parallelism > 0 ? parallelism : AutoParallelism;
+
+    private string ParallelismText(int value) => value > 0 ? value.ToString() : $"{Loc["Auto"]} ({AutoParallelism})";
+
     protected override async Task OnInitializedAsync()
     {
+        try
+        {
+            hardwareConcurrency = Math.Max(1, await WebWorkerPool.GetHardwareConcurrencyAsync(JSRuntime));
+        }
+        catch (InvalidOperationException)
+        {
+            // Keep a single worker
+        }
+
         if (surveyId != null)
         {
             isLoadingRepository = true;
@@ -329,26 +366,41 @@
         stopwatch.Start();
         await Task.Delay(1);
 
-        await Task.Run(async () =>
+        try
         {
-            for (int i = 0; i < imageFiles.Count; i++)
+            // Start the workers again when the parallelism has changed since the last recognition
+            if (workers != null && workers.Size != WorkerCount)
             {
-                if (i == 0)
-                {
-                    await survey.Recognize(i, JSRuntime, true);
-                }
-                else
-                {
-                    await survey.Recognize(i, JSRuntime);
-                }
+                await workers.DisposeAsync();
+                workers = null;
+            }
+            workers ??= await WebWorkerPool.CreateAsync(JSRuntime, WorkerCount);
+        }
+        catch (InvalidOperationException ex)
+        {
+            stopwatch.Stop();
+            Snackbar.Add(ex.Message, Severity.Error);
+            return;
+        }
+
+        // As many loops as the workers take the next image in turn, so that every worker stays busy
+        // while only that many images are read into memory at a time
+        var pool = workers;
+        int next = 0;
+        async Task RecognizeImages()
+        {
+            while (next < imageFiles.Count)
+            {
+                int i = next++;
+                await survey.Recognize(i, pool, i == 0);
                 processed++;
                 progressMessage = $"{processed} / {imageFiles.Count}";
                 StateHasChanged();
-                await Task.Delay(1);
             }
-        ;
-            isCompleted = true;
-        }, cts.Token);
+        }
+
+        await Task.WhenAll(Enumerable.Range(0, pool.Size).Select(_ => RecognizeImages()));
+        isCompleted = true;
 
         stopwatch.Stop();
         var elapsedTime = Convert.ToDouble(stopwatch.ElapsedMilliseconds) / 1000.0;
@@ -405,7 +457,7 @@
             isLoadingLogImage = true;
             await Task.Run(async () =>
             {
-                await survey.Recognize(logIndex, JSRuntime, true);
+                await survey.Recognize(logIndex, workers!, true);
                 isLoadingLogImage = false;
             });
         }
@@ -419,9 +471,17 @@
             isLoadingLogImage = true;
             await Task.Run(async () =>
             {
-                await survey.Recognize(logIndex, JSRuntime, true);
+                await survey.Recognize(logIndex, workers!, true);
                 isLoadingLogImage = false;
             });
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (workers != null)
+        {
+            await workers.DisposeAsync();
         }
     }
 }

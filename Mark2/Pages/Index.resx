@@ -126,6 +126,9 @@
   <data name="AreaThreshold" xml:space="preserve">
     <value>Area Threshold</value>
   </data>
+  <data name="Auto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
   <data name="ColorThreshold" xml:space="preserve">
     <value>Color Threshold</value>
   </data>
@@ -158,6 +161,9 @@
   </data>
   <data name="MarkRecognition" xml:space="preserve">
     <value>Mark Recognition</value>
+  </data>
+  <data name="Parallelism" xml:space="preserve">
+    <value>Parallelism</value>
   </data>
   <data name="RepositoryLoadingError" xml:space="preserve">
     <value>Repository Loading Error</value>
