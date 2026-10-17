@@ -116,19 +116,23 @@
     </MudCardActions>
 </MudCard>
 
-@if (hasImages || stopwatch.IsRunning || isCompleted)
+@if (stopwatch.IsRunning || isCompleted)
 {
     <MudCard Style="margin-top: 2em;">
         <MudCardContent>
-            <DefragProgress Total="@imageFiles.Count" Processed="@processed" IsCompleted="@isCompleted" Stopwatch="@stopwatch" />
+            <MudProgressLinear Color="Color.Primary" Min=0 Max=@imageFiles.Count Value="@processed" />
         </MudCardContent>
-        @if (isCompleted)
-        {
-            <MudCardActions Class="d-flex align-center justify-center" Style="padding-bottom: 1.5em;">
+        <MudCardActions Class="d-flex align-center justify-center" Style="padding-bottom: 1.5em;">
+            @if (stopwatch.IsRunning)
+            {
+                <MudFab HtmlTag="label" Color="Color.Primary" Label="@progressMessage" Disabled=true />
+            }
+            else if (isCompleted)
+            {
                 <MudFab HtmlTag="label" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Download"
                     Label="@Loc["Download"]" OnClick=DownloadFile />
-            </MudCardActions>
-        }
+            }
+        </MudCardActions>
     </MudCard>
 }
 
@@ -211,6 +215,7 @@
     private bool hasLayout = false;
     private string imagesMessage = "";
     private string layoutMessage = "";
+    private string progressMessage = "";
     private bool isCompleted = false;
     private int processed = 0;
     private CancellationTokenSource cts = new();
@@ -249,7 +254,7 @@
     {
         // A canceled file dialog also ends up here with no files. InputFile then discards the files
         // selected before, so they can no longer be read and are cleared here as well.
-        // Show the newly loaded images as pending in the progress map.
+        // The progress and the results of the previous images no longer apply to the new images.
         processed = 0;
         isCompleted = false;
         imageFiles = new List<IBrowserFile>();
@@ -313,6 +318,7 @@
         }
 
         processed = 0;
+        progressMessage = $"{processed} / {imageFiles.Count}";
         survey.ImageFiles = imageFiles.OrderBy(x => x.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
         survey.AreaThreshold = areaThreshold / 100.0;
         survey.ColorThreshold = colorThreshold / 100.0;
@@ -336,6 +342,7 @@
                     await survey.Recognize(i, JSRuntime);
                 }
                 processed++;
+                progressMessage = $"{processed} / {imageFiles.Count}";
                 StateHasChanged();
                 await Task.Delay(1);
             }
@@ -344,6 +351,14 @@
         }, cts.Token);
 
         stopwatch.Stop();
+        var elapsedTime = Convert.ToDouble(stopwatch.ElapsedMilliseconds) / 1000.0;
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomLeft;
+        Snackbar.Configuration.SnackbarVariant = Variant.Outlined;
+        Snackbar.Add($"{Loc["ElapsedTime"]}: {elapsedTime} {Loc["Seconds"]}", Severity.Info, (options) =>
+        {
+            options.CloseAfterNavigation = true;
+            options.Icon = Icons.Material.Outlined.TaskAlt;
+        });
 
         // cts.Token.ThrowIfCancellationRequested();
     }

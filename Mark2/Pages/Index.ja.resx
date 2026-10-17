@@ -135,6 +135,9 @@
   <data name="Download" xml:space="preserve">
     <value>ダウンロード</value>
   </data>
+  <data name="ElapsedTime" xml:space="preserve">
+    <value>処理時間</value>
+  </data>
   <data name="GitHubRepository" xml:space="preserve">
     <value>GitHubリポジトリ</value>
   </data>

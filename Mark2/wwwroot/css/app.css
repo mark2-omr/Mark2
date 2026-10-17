@@ -2,12 +2,6 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-/* Reserve the space of the scrollbar so that the layout does not shift when the page becomes scrollable,
-   e.g. when the results appear after recognition completes. */
-html {
-    scrollbar-gutter: stable;
-}
-
 h1:focus {
     outline: none;
 }
@@ -320,106 +314,6 @@ code {
     transition: color 250ms, opacity 250ms !important;
 }
 
-/* Recognition progress shown like a disk defragmenter's cluster map, on the background of the card.
-   Light mode by default. */
-.defrag {
-    --defrag-text: var(--mud-palette-text-primary);
-    --defrag-text-shadow: none;
-    --defrag-pending: #eceef1;
-    --defrag-pending-border: rgba(0, 0, 0, 0.1);
-    --defrag-done: var(--mud-palette-primary);
-    --defrag-done-shadow: none;
-    color: var(--defrag-text);
-    font-family: 'Orbitron', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-}
-
-.dark-mode .defrag {
-    --defrag-text: #fff;
-    --defrag-text-shadow: 0 0 6px #7fe8ff, 0 0 16px #5fb6cd;
-    --defrag-pending: rgba(95, 182, 205, 0.08);
-    --defrag-pending-border: rgba(95, 182, 205, 0.22);
-    --defrag-done: #7fe8ff;
-    --defrag-done-shadow: 0 0 4px #7fe8ff, 0 0 10px #5fb6cd;
-}
-
-.defrag-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.25rem 1rem;
-    margin-bottom: 0.75rem;
-    letter-spacing: 0.15em;
-}
-
-.defrag-counter {
-    font-size: 1.1rem;
-    font-weight: 700;
-    text-shadow: var(--defrag-text-shadow);
-    font-variant-numeric: tabular-nums;
-}
-
-/* Keep the progress on the right, even before the elapsed time appears on the left. */
-.defrag-progress {
-    margin-left: auto;
-}
-
-.defrag-map {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(var(--defrag-cell-size, 9px), 1fr));
-    /* A fixed row height instead of an aspect ratio: the stretched columns have fractional widths,
-       and the heights derived from them were rounded to different pixels row by row. */
-    grid-auto-rows: var(--defrag-cell-height, 14px);
-    gap: 2px;
-}
-
-.defrag-cell {
-    border-radius: 1px;
-    transition: background-color 300ms, box-shadow 300ms;
-}
-
-.defrag-cell-pending {
-    background-color: var(--defrag-pending);
-    box-shadow: inset 0 0 0 1px var(--defrag-pending-border);
-}
-
-/* Matches the percentage: the primary color in light mode, glowing cyan in dark mode. */
-.defrag-cell-done {
-    background-color: var(--defrag-done);
-    box-shadow: var(--defrag-done-shadow);
-}
-
-.defrag-cell-active {
-    background-color: #ffb300;
-    animation: defrag-access-light 700ms steps(1) infinite;
-}
-
-/* The colors are written in each theme's keyframes instead of custom properties,
-   because some browsers (e.g. Safari) keep the old colors of a running animation after switching the theme. */
-.dark-mode .defrag-cell-active {
-    background-color: #ffe14d;
-    animation-name: defrag-access-dark;
-}
-
-@keyframes defrag-access-light {
-    0% { background-color: #ffb300; }
-    33% { background-color: #43a047; }
-    66% { background-color: #ff7043; }
-}
-
-@keyframes defrag-access-dark {
-    0% { background-color: #ffe14d; box-shadow: 0 0 6px #ffe14d; }
-    33% { background-color: #4dff88; box-shadow: 0 0 6px #4dff88; }
-    66% { background-color: #ffffff; box-shadow: 0 0 6px #ffffff; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .defrag *, .defrag *::before, .defrag *::after {
-        animation: none !important;
-        transition: none !important;
-    }
-}
-
 /* Cards, the app bar and buttons glow like neon tubes in dark mode. */
 .dark-mode {
     --neon-glow: #7fe8ff;
@@ -437,13 +331,6 @@ code {
         color: #fff;
         text-shadow: 0 0 3px rgba(127, 232, 255, 0.6);
     }
-
-.app-title {
-    font-family: 'Orbitron', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    font-weight: 500;
-    /* Orbitron's lowercase letters look crowded at the default spacing. */
-    letter-spacing: 0.1em;
-}
 
 .dark-mode .mud-appbar {
     /* Also used by the selected item of the theme toggle. */
