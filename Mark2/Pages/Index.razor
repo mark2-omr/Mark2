@@ -103,7 +103,6 @@
                         <MudSelect @bind-Value="parallelism" T="int" Label="@Loc["Parallelism"]" Variant="Variant.Outlined"
                             ToStringFunc="ParallelismText" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft"
                             Style="margin-top: 1em;">
-                            <MudSelectItem T="int" Value="0">@ParallelismText(0)</MudSelectItem>
                             @for (int n = 1; n <= hardwareConcurrency; n++)
                             {
                                 var count = n;
@@ -241,16 +240,14 @@
     // starting another .NET runtime in each worker takes time and memory.
     private WebWorkerPool? workers;
 
-    // The number of workers to run in parallel; 0 means auto (one less than the logical processors,
-    // so that one is left for the UI thread)
-    private int parallelism = 0;
+    // The number of workers to run in parallel; starts at the auto count (one less than the logical
+    // processors, so that one is left for the UI thread)
+    private int parallelism = 1;
     private int hardwareConcurrency = 1;
 
     private int AutoParallelism => Math.Max(1, hardwareConcurrency - 1);
 
-    private int WorkerCount => parallelism > 0 ? parallelism : AutoParallelism;
-
-    private string ParallelismText(int value) => value > 0 ? value.ToString() : $"{Loc["Auto"]} ({AutoParallelism})";
+    private string ParallelismText(int value) => value == AutoParallelism ? $"{value} ({Loc["Auto"]})" : value.ToString();
 
     protected override async Task OnInitializedAsync()
     {
@@ -262,6 +259,8 @@
         {
             // Keep a single worker
         }
+
+        parallelism = AutoParallelism;
 
         if (surveyId != null)
         {
@@ -369,12 +368,12 @@
         try
         {
             // Start the workers again when the parallelism has changed since the last recognition
-            if (workers != null && workers.Size != WorkerCount)
+            if (workers != null && workers.Size != parallelism)
             {
                 await workers.DisposeAsync();
                 workers = null;
             }
-            workers ??= await WebWorkerPool.CreateAsync(JSRuntime, WorkerCount);
+            workers ??= await WebWorkerPool.CreateAsync(JSRuntime, parallelism);
         }
         catch (InvalidOperationException ex)
         {
