@@ -15,6 +15,7 @@ Image recognition runs in a pool of Web Workers (`Mark2Worker/Mark2Worker.csproj
 - SixLabors.ImageSharp 4 for image processing
 - ClosedXML for reading layout spreadsheets and writing result spreadsheets
 - ONNX Runtime Web (`wwwroot/js/ort/`) for handwritten digit recognition via JS interop (`runOnnxRuntime`)
+- Toolbelt.Blazor.PWA.Updater for the "Update now" bar shown when a new version is deployed (production only)
 
 ## Layout
 
