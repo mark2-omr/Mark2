@@ -8,6 +8,7 @@
     <link rel="preload" id="webassembly" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Orbitron:500,700&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css?v=1" rel="stylesheet" />
+    <link href="Mark2#[.{fingerprint}].styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="favicon.ico" sizes="any" />
@@ -44,8 +45,10 @@
         <span class="dismiss">🗙</span>
     </div>
     <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
+    <script src="_content/Toolbelt.Blazor.PWA.Updater.Service/script.min.js" no-register></script>
     <script>
-      navigator.serviceWorker.register("service-worker.js", { updateViaCache: "none" });
+      navigator.serviceWorker.register("service-worker.js", { updateViaCache: "none" })
+        .then(registration => Toolbelt.Blazor.PWA.Updater.handleRegistration(registration));
     </script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="js/FileSaveAs.js"></script>

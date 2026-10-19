@@ -20,6 +20,13 @@ a, .btn-link {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
+.pwa-updater[b-pwa-updater] {
+    /* Show the update bar above the MudBlazor app bar. */
+    --pwa-updater-bar-z-index: calc(var(--mud-zindex-appbar) + 50);
+    --pwa-updater-font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --pwa-updater-bar-backcolor: var(--mud-palette-primary);
+}
+
 .content {
     padding-top: 1.1rem;
 }

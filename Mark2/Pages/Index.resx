@@ -162,6 +162,9 @@
   <data name="MarkRecognition" xml:space="preserve">
     <value>Mark Recognition</value>
   </data>
+  <data name="NewVersionReady" xml:space="preserve">
+    <value>A new version is available.</value>
+  </data>
   <data name="Parallelism" xml:space="preserve">
     <value>Parallelism</value>
   </data>
@@ -173,5 +176,8 @@
   </data>
   <data name="StartRecognition" xml:space="preserve">
     <value>Start Recognition</value>
+  </data>
+  <data name="UpdateNow" xml:space="preserve">
+    <value>Update now</value>
   </data>
 </root>
