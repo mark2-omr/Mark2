@@ -3,12 +3,12 @@ kind: mixin
 name: dotnet-sdk
 version: "0.1.0"
 displayName: .NET SDK
-description: Install the .NET SDK (11 RC2 by default) with dotnet-install.sh
+description: Install the .NET SDK (11 RC3 by default) with dotnet-install.sh
 
 # Override with: --kit-arg dotnet-sdk.version=x.y.z
 args:
   version:
-    default: "11.0.100-rc.2.26504.105"
+    default: "11.0.100-rc.3.26522.148"
     description: SDK version passed to dotnet-install.sh
     pattern: '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'
 

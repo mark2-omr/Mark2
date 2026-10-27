@@ -10,7 +10,7 @@ Image recognition runs in a pool of Web Workers (`Mark2Worker/Mark2Worker.csproj
 
 ## Tech stack
 
-- .NET 11 (RC2) / Blazor WebAssembly, AOT + SIMD in Release builds
+- .NET 11 (RC3) / Blazor WebAssembly, AOT + SIMD in Release builds
 - MudBlazor 9 for UI
 - SixLabors.ImageSharp 4 for image processing
 - ClosedXML for reading layout spreadsheets and writing result spreadsheets

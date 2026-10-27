@@ -6,7 +6,7 @@ The solution (`Mark2.slnx`) contains the app project in `Mark2/`. It is a Blazor
 
 ## Requirements
 
-- [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) (currently RC2)
+- [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) (currently RC3)
 - `wasm-tools` workload for Release builds (AOT compilation)
 
 ```sh
