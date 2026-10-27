@@ -13,9 +13,13 @@ public sealed class WebWorkerPool : IAsyncDisposable
 
     public int Size => workers.Count;
 
-    private WebWorkerPool(IReadOnlyList<WebWorkerClient> workers)
+    // The number of workers asked for when the pool was created, which Size can be less than
+    public int RequestedSize { get; }
+
+    private WebWorkerPool(IReadOnlyList<WebWorkerClient> workers, int requestedSize)
     {
         this.workers = workers;
+        RequestedSize = requestedSize;
         idleWorkers = new(workers);
         available = new(workers.Count, workers.Count);
     }
@@ -35,27 +39,71 @@ public sealed class WebWorkerPool : IAsyncDisposable
         }
     }
 
-    // Each worker starts its own .NET runtime, which takes time and memory
+    // Each worker starts its own .NET runtime, which takes time and memory.
+    // The pool may have fewer workers than the size when some of them fail to start.
     public static async Task<WebWorkerPool> CreateAsync(IJSRuntime jsRuntime, int size, CancellationToken cancellationToken = default)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(size, 1);
 
-        var tasks = Enumerable.Range(0, size)
-            .Select(_ => WebWorkerClient.CreateAsync(jsRuntime, cancellationToken: cancellationToken))
+        // The first worker starts alone, so that the runtime files are in the cache before the
+        // others download them all at once. When it cannot start, the others would fail the same way.
+        var first = await CreateWorkerAsync(jsRuntime, cancellationToken);
+
+        // Each of the others downloads dotnet.native.wasm (tens of MB with AOT) at the same time,
+        // which can fail with "Failed to fetch" on devices with many processors. Leave out the
+        // workers that still fail after retrying instead of failing the whole pool.
+        var tasks = Enumerable.Range(1, size - 1)
+            .Select(_ => TryCreateWorkerAsync(jsRuntime, cancellationToken))
             .ToList();
 
         try
         {
-            return new WebWorkerPool(await Task.WhenAll(tasks));
+            await Task.WhenAll(tasks);
         }
         catch
         {
             // Do not leave the workers that started running in the background
-            foreach (var task in tasks.Where(t => t.IsCompletedSuccessfully))
+            foreach (var worker in tasks.Where(t => t.IsCompletedSuccessfully).Select(t => t.Result).Prepend(first))
             {
-                await task.Result.DisposeAsync();
+                if (worker != null)
+                {
+                    await worker.DisposeAsync();
+                }
             }
             throw;
+        }
+
+        return new WebWorkerPool([first, .. tasks.Select(t => t.Result).OfType<WebWorkerClient>()], size);
+    }
+
+    private static async Task<WebWorkerClient?> TryCreateWorkerAsync(IJSRuntime jsRuntime, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await CreateWorkerAsync(jsRuntime, cancellationToken);
+        }
+        catch (InvalidOperationException ex)
+        {
+            Console.WriteLine($"A worker failed to start and is left out of the pool: {ex.Message}");
+            return null;
+        }
+    }
+
+    // The runtime retries a failed download only within about 100 ms, so retry the whole startup
+    // after waiting long enough for a temporary network error or lack of resources to go away
+    private static async Task<WebWorkerClient> CreateWorkerAsync(IJSRuntime jsRuntime, CancellationToken cancellationToken)
+    {
+        const int maxAttempts = 3;
+        for (int attempt = 1; ; attempt++)
+        {
+            try
+            {
+                return await WebWorkerClient.CreateAsync(jsRuntime, cancellationToken: cancellationToken);
+            }
+            catch (InvalidOperationException) when (attempt < maxAttempts)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(attempt), cancellationToken);
+            }
         }
     }
 

@@ -29,7 +29,7 @@ The repository is managed by the `Mark2.slnx` solution at the root. Each project
 | `Mark2Worker/WorkerMethods.cs` | `[JSExport]` entry points called from the app through `WebWorkerClient` |
 | `Mark2Worker/Models/Item.cs` | Per-image processing: square detection, interpolation, mark / digit recognition, log images |
 | `Mark2Worker/Models/*.cs` | Layout data model (`Page`, `Question`, `Area`, `Square`), `RecognitionResult`, and the JSON context for them |
-| `Mark2Worker/WebWorkerPool.cs` | Pool of workers that runs calls in parallel on idle workers |
+| `Mark2Worker/WebWorkerPool.cs` | Pool of workers that runs calls in parallel on idle workers. Starts the first worker alone, retries a worker that fails to start, and leaves out the ones that still fail |
 | `Mark2Worker/WebWorkerClient.cs`, `Mark2Worker/wwwroot/` | Worker startup and messaging (template code) |
 | `Program.cs` | Host setup (localization, MudBlazor services) |
 | `Pages/Index.razor` | The main (and only) page: UI and workflow |

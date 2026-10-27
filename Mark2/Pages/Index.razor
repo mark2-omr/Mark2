@@ -368,7 +368,7 @@
         try
         {
             // Start the workers again when the parallelism has changed since the last recognition
-            if (workers != null && workers.Size != parallelism)
+            if (workers != null && workers.RequestedSize != parallelism)
             {
                 await workers.DisposeAsync();
                 workers = null;
