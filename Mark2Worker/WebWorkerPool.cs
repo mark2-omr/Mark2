@@ -13,13 +13,9 @@ public sealed class WebWorkerPool : IAsyncDisposable
 
     public int Size => workers.Count;
 
-    // The number of workers asked for when the pool was created, which Size can be less than
-    public int RequestedSize { get; }
-
-    private WebWorkerPool(IReadOnlyList<WebWorkerClient> workers, int requestedSize)
+    private WebWorkerPool(IReadOnlyList<WebWorkerClient> workers)
     {
         this.workers = workers;
-        RequestedSize = requestedSize;
         idleWorkers = new(workers);
         available = new(workers.Count, workers.Count);
     }
@@ -73,7 +69,7 @@ public sealed class WebWorkerPool : IAsyncDisposable
             throw;
         }
 
-        return new WebWorkerPool([first, .. tasks.Select(t => t.Result).OfType<WebWorkerClient>()], size);
+        return new WebWorkerPool([first, .. tasks.Select(t => t.Result).OfType<WebWorkerClient>()]);
     }
 
     private static async Task<WebWorkerClient?> TryCreateWorkerAsync(IJSRuntime jsRuntime, CancellationToken cancellationToken)
