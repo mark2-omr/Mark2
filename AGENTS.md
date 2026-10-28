@@ -6,7 +6,7 @@ Guidance for coding agents working in this repository.
 
 Mark2 is a mark recognition (OMR) web app. It is a Blazor WebAssembly app (`Mark2/Mark2.csproj`) that runs entirely in the browser and is deployed to GitHub Pages. Users load a layout (from a file or from `https://repository.mark2.org/<surveyId>.json`) and scanned images, run recognition, and download the results as a spreadsheet.
 
-Image recognition runs in a pool of Web Workers (`Mark2Worker/Mark2Worker.csproj`, from the `blazorwebworker` template), one less than the logical processors by default (Parallelism in the advanced settings), each starting its own .NET runtime off the UI thread. Images are recognized in parallel. This is experimental (branch `experiment/web-worker`).
+Image recognition runs in a pool of Web Workers (`Mark2Worker/Mark2Worker.csproj`, from the `blazorwebworker` template), one less than the logical processors by default (Parallelism in the advanced settings), each starting its own .NET runtime off the UI thread. Starting the runtimes takes several seconds, so `Pages/Index.razor` starts the pool in the background when the page opens (and again on Start when the parallelism has changed or the start failed), and shows "Starting workers..." while Start waits for it. Images are recognized in parallel. This is experimental (branch `experiment/web-worker`).
 
 ## Tech stack
 

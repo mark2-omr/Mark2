@@ -132,7 +132,8 @@
 {
     <MudCard Style="margin-top: 2em;">
         <MudCardContent Style="padding-top: 2em;">
-            <MudProgressLinear Color="Color.Primary" Min=0 Max=@imageFiles.Count Value="@processed" />
+            <MudProgressLinear Color="Color.Primary" Min=0 Max=@imageFiles.Count Value="@processed"
+                Indeterminate="isStartingWorkers" />
         </MudCardContent>
         <MudCardActions Class="d-flex align-center justify-center" Style="padding-bottom: 1.5em;">
             @if (stopwatch.IsRunning)
@@ -236,9 +237,15 @@
     private int logIndex = 0;
     private bool isLoadingLogImage = false;
 
-    // Recognizes the images in parallel off the UI thread. Created on the first recognition, since
-    // starting another .NET runtime in each worker takes time and memory.
-    private WebWorkerPool? workers;
+    // Recognizes the images in parallel off the UI thread. Starting another .NET runtime in each worker
+    // takes several seconds, so the workers start in the background when the page opens, while the
+    // layout and the images are being chosen.
+    private Task<WebWorkerPool>? workersTask;
+
+    // The parallelism the workers in workersTask were started with
+    private int workersSize;
+
+    private bool isStartingWorkers = false;
 
     // The number of workers to run in parallel; starts at the auto count (one less than the logical
     // processors, so that one is left for the UI thread)
@@ -261,6 +268,7 @@
         }
 
         parallelism = AutoParallelism;
+        workersTask = StartWorkers();
 
         if (surveyId != null)
         {
@@ -354,7 +362,11 @@
         }
 
         processed = 0;
-        progressMessage = $"{processed} / {imageFiles.Count}";
+
+        // The workers may still be starting right after the page opens, or need to start again
+        isStartingWorkers = workersTask is not { IsCompletedSuccessfully: true } || workersSize != parallelism;
+        progressMessage = isStartingWorkers ? Loc["StartingWorkers"] : $"{processed} / {imageFiles.Count}";
+
         survey.ImageFiles = imageFiles.OrderBy(x => x.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort()).ToList();
         survey.AreaThreshold = areaThreshold / 100.0;
         survey.ColorThreshold = colorThreshold / 100.0;
@@ -365,15 +377,17 @@
         stopwatch.Start();
         await Task.Delay(1);
 
+        WebWorkerPool pool;
         try
         {
-            // Start the workers again when the parallelism has changed since the last recognition
-            if (workers != null && workers.RequestedSize != parallelism)
+            // Start the workers again when the parallelism has changed since they were started,
+            // or when they failed to start
+            if (workersTask == null || workersSize != parallelism || workersTask.IsFaulted || workersTask.IsCanceled)
             {
-                await workers.DisposeAsync();
-                workers = null;
+                await DisposeWorkersAsync();
+                workersTask = StartWorkers();
             }
-            workers ??= await WebWorkerPool.CreateAsync(JSRuntime, parallelism);
+            pool = await workersTask;
         }
         catch (InvalidOperationException ex)
         {
@@ -381,10 +395,16 @@
             Snackbar.Add(ex.Message, Severity.Error);
             return;
         }
+        finally
+        {
+            isStartingWorkers = false;
+        }
+
+        progressMessage = $"{processed} / {imageFiles.Count}";
+        StateHasChanged();
 
         // As many loops as the workers take the next image in turn, so that every worker stays busy
         // while only that many images are read into memory at a time
-        var pool = workers;
         int next = 0;
         async Task RecognizeImages()
         {
@@ -412,6 +432,32 @@
         });
 
         // cts.Token.ThrowIfCancellationRequested();
+    }
+
+    private Task<WebWorkerPool> StartWorkers()
+    {
+        workersSize = parallelism;
+        return WebWorkerPool.CreateAsync(JSRuntime, parallelism);
+    }
+
+    // Waits for the workers that are still starting, so that none of them are left running
+    private async Task DisposeWorkersAsync()
+    {
+        if (workersTask == null)
+        {
+            return;
+        }
+
+        var task = workersTask;
+        workersTask = null;
+        try
+        {
+            await (await task).DisposeAsync();
+        }
+        catch (InvalidOperationException)
+        {
+            // The workers failed to start, so none of them are running
+        }
     }
 
     private async Task DownloadFile()
@@ -456,7 +502,7 @@
             isLoadingLogImage = true;
             await Task.Run(async () =>
             {
-                await survey.Recognize(logIndex, workers!, true);
+                await survey.Recognize(logIndex, await workersTask!, true);
                 isLoadingLogImage = false;
             });
         }
@@ -470,7 +516,7 @@
             isLoadingLogImage = true;
             await Task.Run(async () =>
             {
-                await survey.Recognize(logIndex, workers!, true);
+                await survey.Recognize(logIndex, await workersTask!, true);
                 isLoadingLogImage = false;
             });
         }
@@ -478,9 +524,6 @@
 
     public async ValueTask DisposeAsync()
     {
-        if (workers != null)
-        {
-            await workers.DisposeAsync();
-        }
+        await DisposeWorkersAsync();
     }
 }
