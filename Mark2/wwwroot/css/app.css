@@ -27,6 +27,22 @@ a, .btn-link {
     /* An orange bar with dark text, so that it stands out from the app bar. */
     --pwa-updater-bar-backcolor: var(--mud-palette-warning);
     --pwa-updater-bar-color: rgba(0, 0, 0, 0.87);
+    /* The same height as the MudBlazor app bar, which changes with the screen size. */
+    --pwa-updater-bar-height: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 8);
+    /* Keep the "Update now" button at the height of a MudBlazor button instead of following the bar. */
+    --pwa-updater-updatenowbutton-height: 36px;
+}
+
+@media (orientation: landscape) {
+    .pwa-updater[b-pwa-updater] {
+        --pwa-updater-bar-height: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4);
+    }
+}
+
+@media (min-width: 600px) {
+    .pwa-updater[b-pwa-updater] {
+        --pwa-updater-bar-height: var(--mud-appbar-height);
+    }
 }
 
 .pwa-updater-updatenow-button[b-pwa-updater] {
