@@ -24,8 +24,26 @@ a, .btn-link {
     /* Show the update bar above the MudBlazor app bar. */
     --pwa-updater-bar-z-index: calc(var(--mud-zindex-appbar) + 50);
     --pwa-updater-font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --pwa-updater-bar-backcolor: var(--mud-palette-primary);
+    /* An orange bar with dark text, so that it stands out from the app bar. */
+    --pwa-updater-bar-backcolor: var(--mud-palette-warning);
+    --pwa-updater-bar-color: rgba(0, 0, 0, 0.87);
 }
+
+.pwa-updater-updatenow-button[b-pwa-updater] {
+    border-color: rgba(0, 0, 0, 0.4);
+}
+
+    .pwa-updater-updatenow-button:hover[b-pwa-updater] {
+        background-color: rgba(0, 0, 0, 0.08);
+    }
+
+.pwa-updater-close-button[b-pwa-updater] {
+    color: rgba(0, 0, 0, 0.54);
+}
+
+    .pwa-updater-close-button:hover[b-pwa-updater] {
+        color: rgba(0, 0, 0, 0.87);
+    }
 
 .content {
     padding-top: 1.1rem;
