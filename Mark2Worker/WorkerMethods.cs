@@ -22,17 +22,18 @@ public static partial class WorkerMethods
         var page = JsonSerializer.Deserialize(pageJson, WorkerJsonContext.Default.Page)!;
 
         bool imageLoaded = true;
-        var image = new Image<Rgba32>(595, 842);
+        Image<Rgba32> image;
         try
         {
             image = Image.Load<Rgba32>(imageBytes);
         }
         catch
         {
+            image = new Image<Rgba32>(595, 842);
             imageLoaded = false;
         }
 
-        Item item = new(page, colorThreshold, areaThreshold, image);
+        using Item item = new(page, colorThreshold, areaThreshold, image, withLogImage);
         RecognitionResult result = new();
         if (imageLoaded)
         {
