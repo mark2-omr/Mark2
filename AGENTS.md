@@ -39,7 +39,7 @@ The repository is managed by the `Mark2.slnx` solution at the root. Each project
 | `Layout/MainLayout.razor` | App layout |
 | `wwwroot/` | Static assets, `index.html` (startup loading screen), service worker, JS |
 | `.github/workflows/github-pages.yml` | Publish and deploy to GitHub Pages on push to `main` |
-| `sbxenv.yaml`, `sbx/dotnet/spec.yaml` | Docker sandbox (sbx) environment with the .NET SDK |
+| `sbxenv.yaml`, `sbx/dotnet/` | Docker sandbox (sbx) environment with the .NET SDK (kit spec v3: `dotnet.yaml` descriptor and `dotnet.dockerfile` recipe) |
 
 ## Commands
 

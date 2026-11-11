@@ -1,0 +1,88 @@
+# syntax=docker/sandbox-kit:3
+# The .NET SDK for building and running Mark2 in the sandbox. A mixin layered
+# onto the agent workload (see sbxenv.yaml); the recipe is dotnet.dockerfile.
+schemaVersion: "3"
+displayName: .NET SDK
+description: The .NET SDK (11.0.100 by default), installed with dotnet-install.sh
+sourceUrl: https://github.com/mark2-omr/Mark2
+licenses: [MIT]
+
+kind: mixin
+
+# The SDK version, stated once: the build installs it, checks that
+# `dotnet --version` reports it, and expands it into `version` and `provides`.
+version: "${{ kit.args.version }}"
+
+# Override with: --kit-arg dotnet.version=x.y.z
+# A local kit is built on create, so the override takes effect.
+args:
+  version:
+    default: "11.0.100"
+    description: SDK version passed to dotnet-install.sh
+    pattern: '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'
+    buildArg: DOTNET_SDK_VERSION
+
+provides: ["dotnet-sdk@${{ kit.args.version }}"]
+
+capabilities:
+  - type: com.docker.sandbox/network-policy@1
+    config:
+      # The ICU install hook below. The agent workloads are built on DHI
+      # Debian 13, whose apt sources are deb.debian.org (including
+      # debian-security) and dhi.io; `apt-get update` fails if any of them is
+      # unreachable.
+      install:
+        allow:
+          - deb.debian.org
+          - dhi.io
+      # NuGet restore, `dotnet workload install wasm-tools`, and
+      # dotnet-install.sh if run in the sandbox.
+      runtime:
+        allow:
+          - dot.net
+          - builds.dotnet.microsoft.com
+          - ci.dot.net
+          - dotnetcli.azureedge.net
+          - dotnetbuilds.azureedge.net
+          - api.nuget.org
+          - "*.nuget.org"
+          - aka.ms
+
+  # The SDK needs ICU (libicu), which an overlay cannot carry, so it is
+  # installed with apt at create when the base does not have it. The check
+  # looks for the library file because the DHI base does not keep the
+  # ldconfig cache up to date.
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      install:
+        - command: |
+            set -eu
+            if ! ls /usr/lib/*/libicuuc.so.* /usr/lib/libicuuc.so.* >/dev/null 2>&1; then
+              apt-get update -qq
+              DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y libicu-dev
+              rm -rf /var/lib/apt/lists/*
+            fi
+          user: "0"
+          env: [HTTP_PROXY, HTTPS_PROXY, NO_PROXY, http_proxy, https_proxy, no_proxy]
+          description: Install ICU for the .NET SDK
+
+  # The Blazor dev server (dotnet run --urls http://0.0.0.0:5130).
+  - type: com.docker.sandbox/port@1
+    config:
+      name: blazor-dev
+      container: 5130
+
+  # Both versions, each optional, so the kit composes with workloads that use
+  # either; a composition cannot mix @1 and @2.
+  - type: com.docker.sandbox/agent-context@1
+    optional: true
+    config: &agent-context
+      content: |
+        ## Mark2 (.NET) sandbox
+        - .NET SDK ${{ kit.args.version }} is installed at /usr/local/share/dotnet.
+        - Run the dev server bound to all interfaces so the published port works:
+          `dotnet run --project Mark2 --urls http://0.0.0.0:5130`
+
+  - type: com.docker.sandbox/agent-context@2
+    optional: true
+    config: *agent-context
