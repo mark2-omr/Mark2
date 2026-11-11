@@ -30,7 +30,6 @@ jobs:
         uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 11.0.x
-          dotnet-quality: preview
       - name: Install wasm-tools
         run: dotnet workload install wasm-tools
       - name: Publish

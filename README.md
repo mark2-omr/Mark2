@@ -6,7 +6,7 @@ The solution (`Mark2.slnx`) contains the app project in `Mark2/`. It is a Blazor
 
 ## Requirements
 
-- [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) (currently RC3)
+- [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0)
 - `wasm-tools` workload for Release builds (AOT compilation)
 
 ```sh
@@ -40,7 +40,7 @@ Pushing to `main` runs `.github/workflows/github-pages.yml`, which publishes the
 
 ## Sandbox (sbx)
 
-`sbxenv.yaml` defines a Docker sandbox with the .NET SDK installed (see `sbx/dotnet/spec.yaml`).
+`sbxenv.yaml` defines a Docker sandbox with the .NET SDK installed (see the kit in `sbx/dotnet/`: `dotnet.yaml` and `dotnet.dockerfile`).
 
 ```sh
 % sbx env run .                          # run Claude Code in the sandbox
