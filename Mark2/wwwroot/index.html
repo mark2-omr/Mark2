@@ -6,7 +6,7 @@
     <title>Mark2</title>
     <base href="/" />
     <link rel="preload" id="webassembly" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Orbitron:500,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css?v=1" rel="stylesheet" />
     <link href="Mark2#[.{fingerprint}].styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/app.css" />
@@ -21,21 +21,14 @@
   <body>
     <div id="app">
         <div class="boot-screen">
-            <div class="boot-grid"></div>
             <div class="boot-core">
-                <div class="boot-ring boot-ring-outer"></div>
-                <div class="boot-ring boot-ring-arcs"></div>
-                <div class="boot-ring boot-ring-ticks"></div>
+                <div class="boot-track"></div>
                 <div class="boot-progress"></div>
-                <div class="boot-sweep"></div>
                 <div class="loading-progress-text"></div>
             </div>
             <div class="boot-title">Mark2</div>
-            <div class="boot-status">SYSTEM INITIALIZING</div>
-            <div class="boot-corner boot-corner-tl"></div>
-            <div class="boot-corner boot-corner-tr"></div>
-            <div class="boot-corner boot-corner-bl"></div>
-            <div class="boot-corner boot-corner-br"></div>
+            <div class="boot-marks"><span></span><span></span><span></span><span></span></div>
+            <div class="boot-status">Loading...</div>
         </div>
     </div>
 

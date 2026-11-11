@@ -109,109 +109,118 @@ a, .btn-link {
     }
 
 .boot-screen {
-    --boot-cyan: #5fb6cd;
-    --boot-glow: #7fe8ff;
-    --boot-bg: #03173d;
+    --boot-bg: #f4efe6;
+    --boot-accent: #d97757;
+    --boot-track: #e0d9cc;
+    --boot-text: #3d3a35;
+    --boot-muted: #8a857c;
+    --boot-glow-a: rgba(217, 119, 87, 0.18);
+    --boot-glow-b: rgba(138, 133, 124, 0.16);
+    --boot-grid: rgba(138, 133, 124, 0.2);
     position: fixed;
     inset: 0;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 1.5rem;
-    color: var(--boot-glow);
-    font-family: 'Orbitron', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    background: radial-gradient(ellipse at 50% 40%, #0a2c66 0%, var(--boot-bg) 45%, #010814 100%);
+    color: var(--boot-text);
+    font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background:
+        radial-gradient(circle at 85% 10%, var(--boot-glow-a) 0, transparent 45%),
+        radial-gradient(circle at 10% 95%, var(--boot-glow-b) 0, transparent 50%),
+        var(--boot-bg);
     z-index: 0;
 }
 
-    /* scanlines */
-    .boot-screen::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(to bottom, rgba(127, 232, 255, 0.04) 0, rgba(127, 232, 255, 0.04) 1px, transparent 1px, transparent 3px);
-        pointer-events: none;
-        z-index: 2;
-    }
-
-    /* vignette */
-    .boot-screen::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.6) 100%);
-        pointer-events: none;
-        z-index: 2;
-    }
-
-.boot-grid {
+/* grid that fades out toward the edges */
+.boot-screen::before {
+    content: "";
     position: absolute;
-    left: -50%;
-    right: -50%;
-    bottom: -10%;
-    height: 55%;
-    background-image: linear-gradient(rgba(95, 182, 205, 0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(95, 182, 205, 0.35) 1px, transparent 1px);
-    background-size: 3rem 3rem;
-    transform: perspective(400px) rotateX(65deg);
-    transform-origin: 50% 0;
-    mask-image: linear-gradient(to bottom, transparent 0%, #000 60%);
-    z-index: 0;
+    inset: 0;
+    background-image:
+        linear-gradient(var(--boot-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--boot-grid) 1px, transparent 1px);
+    background-size: 2.5rem 2.5rem;
+    background-position: center;
+    mask-image: radial-gradient(ellipse at center, #000 10%, transparent 70%);
+    pointer-events: none;
+}
+
+.boot-screen > * {
+    position: relative;
+}
+
+@media (prefers-color-scheme: dark) {
+    .boot-screen {
+        --boot-bg: #262624;
+        --boot-track: #3b3a37;
+        --boot-text: #f0eee6;
+        --boot-muted: #a09d94;
+        --boot-glow-a: rgba(217, 119, 87, 0.16);
+        --boot-glow-b: rgba(160, 157, 148, 0.08);
+        --boot-grid: rgba(160, 157, 148, 0.12);
+    }
 }
 
 .boot-core {
     position: relative;
-    width: 12rem;
-    height: 12rem;
-    z-index: 1;
-}
-
-.boot-ring {
-    position: absolute;
+    width: 9rem;
+    height: 9rem;
     border-radius: 50%;
-    will-change: transform;
 }
 
-.boot-ring-outer {
+.boot-core::before {
+    content: "";
+    position: absolute;
+    inset: -1rem;
+    border-radius: 50%;
+    border: 1px dashed var(--boot-track);
+}
+
+.boot-track,
+.boot-progress {
+    position: absolute;
     inset: 0;
-    border: 1px dashed rgba(127, 232, 255, 0.5);
-    animation: boot-spin 18s linear infinite;
+    border-radius: 50%;
+    mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px));
 }
 
-.boot-ring-arcs {
-    inset: 0.6rem;
-    border: 2px solid transparent;
-    border-top-color: var(--boot-glow);
-    border-bottom-color: var(--boot-cyan);
-    filter: drop-shadow(0 0 6px var(--boot-glow));
-    animation: boot-spin 2.4s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite reverse;
-}
-
-.boot-ring-ticks {
-    inset: 1.4rem;
-    background: repeating-conic-gradient(rgba(127, 232, 255, 0.55) 0deg 1deg, transparent 1deg 10deg);
-    mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
-    animation: boot-spin 30s linear infinite;
+.boot-track {
+    background: var(--boot-track);
 }
 
 .boot-progress {
-    position: absolute;
-    inset: 2.2rem;
-    border-radius: 50%;
-    background:
-        conic-gradient(var(--boot-glow) var(--blazor-load-percentage, 0%), rgba(95, 182, 205, 0.15) 0);
-    mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
-    filter: drop-shadow(0 0 8px var(--boot-glow));
+    background: conic-gradient(var(--boot-accent) var(--blazor-load-percentage, 0%), transparent 0);
+    transition: background 0.2s ease-out;
+    filter: drop-shadow(0 0 6px rgba(217, 119, 87, 0.45));
 }
 
-.boot-sweep {
-    position: absolute;
-    inset: 2.2rem;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg, transparent 0deg, rgba(127, 232, 255, 0.25) 50deg, transparent 60deg);
-    will-change: transform;
-    animation: boot-spin 3s linear infinite;
+.boot-marks {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: -0.25rem;
+}
+
+    .boot-marks span {
+        width: 0.8rem;
+        height: 0.8rem;
+        border-radius: 50%;
+        border: 2px solid var(--boot-track);
+        animation: boot-fill 1.8s ease-in-out infinite;
+    }
+
+    .boot-marks span:nth-child(2) { animation-delay: 0.3s; }
+    .boot-marks span:nth-child(3) { animation-delay: 0.6s; }
+    .boot-marks span:nth-child(4) { animation-delay: 0.9s; }
+
+@keyframes boot-fill {
+    0%, 60%, 100% { background: transparent; border-color: var(--boot-track); }
+    25%, 40% { background: var(--boot-accent); border-color: var(--boot-accent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .boot-marks span { animation: none; }
 }
 
 .loading-progress-text {
@@ -220,11 +229,9 @@ a, .btn-link {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: #fff;
-    text-shadow: 0 0 8px var(--boot-glow), 0 0 18px var(--boot-cyan);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--boot-text);
 }
 
     .loading-progress-text:after {
@@ -232,48 +239,16 @@ a, .btn-link {
     }
 
 .boot-title {
-    position: relative;
-    z-index: 1;
-    font-size: 2.2rem;
-    font-weight: 700;
-    letter-spacing: 0.45em;
-    margin-right: -0.45em;
-    color: #fff;
-    text-shadow: 0 0 6px var(--boot-glow), 0 0 20px var(--boot-cyan), 0 0 40px rgba(95, 182, 205, 0.6);
+    margin-top: 0.5rem;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
 }
 
 .boot-status {
-    position: relative;
-    z-index: 1;
     margin-top: -0.75rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.4em;
-    margin-right: -0.4em;
-    color: var(--boot-cyan);
-}
-
-.boot-corner {
-    position: absolute;
-    width: 2.5rem;
-    height: 2.5rem;
-    border: 0 solid rgba(127, 232, 255, 0.6);
-    z-index: 1;
-}
-
-.boot-corner-tl { top: 1.5rem; left: 1.5rem; border-top-width: 2px; border-left-width: 2px; }
-.boot-corner-tr { top: 1.5rem; right: 1.5rem; border-top-width: 2px; border-right-width: 2px; }
-.boot-corner-bl { bottom: 1.5rem; left: 1.5rem; border-bottom-width: 2px; border-left-width: 2px; }
-.boot-corner-br { bottom: 1.5rem; right: 1.5rem; border-bottom-width: 2px; border-right-width: 2px; }
-
-@keyframes boot-spin {
-    to { transform: rotate(360deg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .boot-screen *, .boot-screen *::before, .boot-screen *::after {
-        animation: none !important;
-    }
+    font-size: 0.875rem;
+    color: var(--boot-muted);
 }
 
 code {
