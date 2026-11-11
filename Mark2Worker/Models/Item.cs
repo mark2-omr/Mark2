@@ -8,10 +8,11 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
 [SupportedOSPlatform("browser")]
-public partial class Item
+public partial class Item : IDisposable
 {
     public Image<Rgba32> Image { get; set; }
-    public Image<Rgba32> LogImage { get; set; }
+    // Only created when the log image is requested, so that the full-size copy is not kept otherwise
+    public Image<Rgba32>? LogImage { get; set; }
     public List<Square> Squares { get; set; }
     public Page Page { get; set; }
     public double ColorThreshold { get; set; }
@@ -30,14 +31,14 @@ public partial class Item
     [JSImport("globalThis.runOnnxRuntime")]
     private static partial Task<int> RunOnnxRuntime(double[] data);
 
-    public Item(Page page, double colorThreshold, double areaThreshold, Image<Rgba32> image)
+    public Item(Page page, double colorThreshold, double areaThreshold, Image<Rgba32> image, bool withLogImage = false)
     {
         Page = page;
         ColorThreshold = colorThreshold;
         AreaThreshold = areaThreshold;
         Image = image;
 
-        LogImage = image.Clone();
+        LogImage = withLogImage ? image.Clone() : null;
         Squares = [];
         Answers = [];
     }
@@ -233,6 +234,11 @@ public partial class Item
 
     public void FillRect(int x, int y, int w, int h, Rgba32 c, float a)
     {
+        if (LogImage == null)
+        {
+            return;
+        }
+
         for (int i = x; i < w + x; i++)
         {
             for (int j = y; j < h + y; j++)
@@ -290,7 +296,7 @@ public partial class Item
                 var topLeft = BiLenearInterpoltation(area.X, area.Y);
                 var bottomRight = BiLenearInterpoltation(area.X + area.Width, area.Y + area.Height);
 
-                var cloneImage = Image.Clone(img => img
+                using var cloneImage = Image.Clone(img => img
                             .Crop(new Rectangle(topLeft[0], topLeft[1],
                                 bottomRight[0] - topLeft[0], bottomRight[1] - topLeft[1]))
                             .Resize(28, 28));
@@ -388,19 +394,26 @@ public partial class Item
 
     public string ErrorImageBase64()
     {
+        LogImage?.Dispose();
         LogImage = Image.Clone();
         FillRect(0, 0, LogImage.Width, LogImage.Height,
             Color.ParseHex("#FF0000FF").ToPixel<Rgba32>(), 0.4f);
 
-        MemoryStream stream = new();
-        LogImage.SaveAsPng(stream, LogImageEncoder);
+        using MemoryStream stream = new();
+        LogImage!.SaveAsPng(stream, LogImageEncoder);
         return Convert.ToBase64String(stream.ToArray());
     }
 
     public string LogImageBase64()
     {
-        MemoryStream stream = new();
-        LogImage.SaveAsPng(stream, LogImageEncoder);
+        using MemoryStream stream = new();
+        LogImage!.SaveAsPng(stream, LogImageEncoder);
         return Convert.ToBase64String(stream.ToArray());
+    }
+
+    public void Dispose()
+    {
+        Image.Dispose();
+        LogImage?.Dispose();
     }
 }
