@@ -72,17 +72,14 @@ capabilities:
       name: blazor-dev
       container: 5130
 
-  # Both versions, each optional, so the kit composes with workloads that use
-  # either; a composition cannot mix @1 and @2.
-  - type: com.docker.sandbox/agent-context@1
+  # Only @2 (sbx v0.51+). Declaring @1 and @2 together makes `sbx env run`
+  # fail to restart an existing sandbox: it resolves the kit without its
+  # workload and rejects "competing agent-context versions".
+  - type: com.docker.sandbox/agent-context@2
     optional: true
-    config: &agent-context
+    config:
       content: |
         ## Mark2 (.NET) sandbox
         - .NET SDK ${{ kit.args.version }} is installed at /usr/local/share/dotnet.
         - Run the dev server bound to all interfaces so the published port works:
           `dotnet run --project Mark2 --urls http://0.0.0.0:5130`
-
-  - type: com.docker.sandbox/agent-context@2
-    optional: true
-    config: *agent-context
