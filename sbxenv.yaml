@@ -14,7 +14,7 @@ name: mark2-${{ env.args.agent }}
 # Mount the project directory (where this file lives) read/write
 workspace: .
 
-# .NET 11 SDK (kit spec v3: sbx/dotnet/dotnet.yaml and dotnet.dockerfile)
+# .NET 11 SDK (kit spec v3: sbx/dotnet/dotnet.yaml, installed by an install hook)
 kits:
   - ./sbx/dotnet
 

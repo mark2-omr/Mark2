@@ -40,7 +40,7 @@ Pushing to `main` runs `.github/workflows/github-pages.yml`, which publishes the
 
 ## Sandbox (sbx)
 
-`sbxenv.yaml` defines a Docker sandbox with the .NET SDK installed (see the kit in `sbx/dotnet/`: `dotnet.yaml` and `dotnet.dockerfile`).
+`sbxenv.yaml` defines a Docker sandbox with the .NET SDK installed (see the kit in `sbx/dotnet/dotnet.yaml`; it installs the SDK inside the sandbox, so Docker does not need to be running).
 
 ```sh
 % sbx env run .                          # run Claude Code in the sandbox
