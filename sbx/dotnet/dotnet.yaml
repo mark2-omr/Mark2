@@ -1,6 +1,8 @@
 # syntax=docker/sandbox-kit:3
 # The .NET SDK for building and running Mark2 in the sandbox. A mixin layered
-# onto the agent workload (see sbxenv.yaml); the recipe is dotnet.dockerfile.
+# onto the agent workload (see sbxenv.yaml). It has no recipe (Dockerfile):
+# the SDK is installed by an install hook inside the sandbox, so the kit needs
+# no build and the host does not need a running Docker engine.
 schemaVersion: "3"
 displayName: .NET SDK
 description: The .NET SDK (11.0.100 by default), installed with dotnet-install.sh
@@ -9,32 +11,52 @@ licenses: [MIT]
 
 kind: mixin
 
-# The SDK version, stated once: the build installs it, checks that
-# `dotnet --version` reports it, and expands it into `version` and `provides`.
-version: "${{ kit.args.version }}"
+# The default SDK version. `version` cannot reference args without a build,
+# so keep it in step with args.version.default.
+version: "11.0.100"
 
 # Override with: --kit-arg dotnet.version=x.y.z
-# A local kit is built on create, so the override takes effect.
+# The install hook installs it and checks that `dotnet --version` reports it.
+# The hook runs on create, so the override applies to a new sandbox.
 args:
   version:
     default: "11.0.100"
     description: SDK version passed to dotnet-install.sh
     pattern: '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'
-    buildArg: DOTNET_SDK_VERSION
 
-provides: ["dotnet-sdk@${{ kit.args.version }}"]
+  # Environment of the agent process.
+  dotnetRoot:
+    default: /usr/local/share/dotnet
+    env: DOTNET_ROOT
+  telemetryOptOut:
+    default: "1"
+    env: DOTNET_CLI_TELEMETRY_OPTOUT
+  noLogo:
+    default: "1"
+    env: DOTNET_NOLOGO
+  skipFirstTimeExperience:
+    default: "1"
+    env: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
+  nugetPackages:
+    default: /home/agent/.nuget/packages
+    env: NUGET_PACKAGES
 
 capabilities:
   - type: com.docker.sandbox/network-policy@1
     config:
-      # The ICU install hook below. The agent workloads are built on DHI
-      # Debian 13, whose apt sources are deb.debian.org (including
-      # debian-security) and dhi.io; `apt-get update` fails if any of them is
-      # unreachable.
+      # The install hooks below. The agent workloads are built on DHI Debian
+      # 13, whose apt sources are deb.debian.org (including debian-security)
+      # and dhi.io; `apt-get update` fails if any of them is unreachable.
+      # dotnet-install.sh downloads the SDK from the dot.net hosts.
       install:
         allow:
           - deb.debian.org
           - dhi.io
+          - dot.net
+          - builds.dotnet.microsoft.com
+          - ci.dot.net
+          - dotnetcli.azureedge.net
+          - dotnetbuilds.azureedge.net
       # NuGet restore, `dotnet workload install wasm-tools`, and
       # dotnet-install.sh if run in the sandbox.
       runtime:
@@ -48,8 +70,8 @@ capabilities:
           - "*.nuget.org"
           - aka.ms
 
-  # The SDK needs ICU (libicu), which an overlay cannot carry, so it is
-  # installed with apt at create when the base does not have it. The check
+  # The SDK needs ICU (libicu), and dotnet-install.sh needs curl. They are
+  # installed with apt only when the base does not have them. The ICU check
   # looks for the library file because the DHI base does not keep the
   # ldconfig cache up to date.
   - type: com.docker.sandbox/lifecycle@1
@@ -57,14 +79,36 @@ capabilities:
       install:
         - command: |
             set -eu
-            if ! ls /usr/lib/*/libicuuc.so.* /usr/lib/libicuuc.so.* >/dev/null 2>&1; then
+            pkgs=""
+            command -v curl >/dev/null 2>&1 || pkgs="$pkgs curl ca-certificates"
+            ls /usr/lib/*/libicuuc.so.* /usr/lib/libicuuc.so.* >/dev/null 2>&1 || pkgs="$pkgs libicu-dev"
+            if [ -n "$pkgs" ]; then
               apt-get update -qq
-              DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y libicu-dev
+              DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y $pkgs
               rm -rf /var/lib/apt/lists/*
             fi
           user: "0"
           env: [HTTP_PROXY, HTTPS_PROXY, NO_PROXY, http_proxy, https_proxy, no_proxy]
-          description: Install ICU for the .NET SDK
+          description: Install ICU and curl for the .NET SDK
+        - command: |
+            set -eu
+            curl -fsSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh
+            bash /tmp/dotnet-install.sh --version "${{ kit.args.version }}" \
+              --install-dir /usr/local/share/dotnet --no-path
+            rm /tmp/dotnet-install.sh
+            ln -sf /usr/local/share/dotnet/dotnet /usr/local/bin/dotnet
+            test "$(DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 dotnet --version)" = "${{ kit.args.version }}"
+          user: "0"
+          env: [HTTP_PROXY, HTTPS_PROXY, NO_PROXY, http_proxy, https_proxy, no_proxy]
+          description: Install .NET SDK ${{ kit.args.version }}
+        # Put dotnet global tools (dotnet tool install -g) on PATH. The agent
+        # and its shells source /etc/sandbox-persistent.sh.
+        - command: |
+            set -eu
+            line='export PATH="$PATH:/home/agent/.dotnet/tools"'
+            grep -qxF "$line" /etc/sandbox-persistent.sh 2>/dev/null || echo "$line" >> /etc/sandbox-persistent.sh
+          user: "0"
+          description: Put dotnet global tools on PATH
 
   # The Blazor dev server (dotnet run --urls http://0.0.0.0:5130).
   - type: com.docker.sandbox/port@1
