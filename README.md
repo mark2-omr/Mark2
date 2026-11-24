@@ -40,11 +40,11 @@ Pushing to `main` runs `.github/workflows/github-pages.yml`, which publishes the
 
 ## Sandbox (sbx)
 
-`sbxenv.yaml` defines a Docker sandbox with the .NET SDK installed (see the kit in `sbx/dotnet/dotnet.yaml`; it installs the SDK inside the sandbox, so Docker does not need to be running).
+`sbxenv.yaml` defines a Docker sandbox with the .NET SDK installed (see the kit in `sbx/dotnet/dotnet.yaml`; it installs the SDK inside the sandbox, so Docker does not need to be running). It defaults to Google Antigravity (`agy`, via `docker.io/sbx/antigravity:latest`) and names the sandbox `mark2-<agent>`.
 
 ```sh
-% sbx env run .                          # run Claude Code in the sandbox
-% sbx env run --env-arg agent=codex .    # or another coding agent
+% sbx env run .                           # run Antigravity (agy) in mark2-antigravity
+% sbx env run --env-arg agent=claude .    # or another agent kit under docker.io/sbx/ (e.g. claude, codex, shell)
 ```
 
 Inside the sandbox, bind the dev server to all interfaces so it is reachable from the host on port 5130:
